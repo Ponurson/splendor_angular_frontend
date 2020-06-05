@@ -11,19 +11,28 @@ import { JwtInterceptor, ErrorInterceptor } from './_helpers';
 import { AppComponent } from './app.component';
 import { AlertComponent } from './_components';
 import { HomeComponent } from './home';
-
+import {MatDialogModule} from '@angular/material/dialog';
+import { DialogComponent } from './dialog/dialog.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';;
+import { GameboardComponent } from './gameboard/gameboard.component'
+;
+import { CardsComponent } from './cards/cards.component'
 @NgModule({
     imports: [
         BrowserModule,
         ReactiveFormsModule,
         HttpClientModule,
-        AppRoutingModule
+        AppRoutingModule,
+        MatDialogModule,
+        BrowserAnimationsModule
     ],
     declarations: [
         AppComponent,
         AlertComponent,
-        HomeComponent
-    ],
+        HomeComponent,
+        DialogComponent ,
+        GameboardComponent ,
+        CardsComponent  ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
@@ -33,4 +42,4 @@ import { HomeComponent } from './home';
     ],
     bootstrap: [AppComponent]
 })
-export class AppModule { };
+export class AppModule { }

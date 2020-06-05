@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Hi </h1>
+<div mat-dialog-content>
+    <p>You have been challenged by {{data.challenger}}</p>
+</div>
+<div mat-dialog-actions>
+<!--    onNoClick() ogarnąć czy ta funkcja się nie aktywauje
+nie ważne jak zamkniesz okno-->
+    <button class="btn btn-primary"[mat-dialog-close]= false>No Thanks</button>
+    <button style="float: right" class="btn btn-primary" [mat-dialog-close]= true cdkFocusInitial>Ok</button>
+</div>

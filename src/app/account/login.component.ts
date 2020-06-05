@@ -1,13 +1,13 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { first } from 'rxjs/operators';
-import { environment } from '@environments/environment';
+﻿import {Component, OnInit} from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {HttpClient} from '@angular/common/http';
+import {first} from 'rxjs/operators';
+import {environment} from '@environments/environment';
 
-import { AccountService, AlertService } from '@app/_services';
+import {AccountService, AlertService} from '@app/_services';
 
-@Component({ templateUrl: 'login.component.html' })
+@Component({templateUrl: 'login.component.html'})
 export class LoginComponent implements OnInit {
     form: FormGroup;
     loading = false;
@@ -21,7 +21,8 @@ export class LoginComponent implements OnInit {
         private accountService: AccountService,
         private alertService: AlertService,
         private http: HttpClient
-    ) { }
+    ) {
+    }
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -33,7 +34,9 @@ export class LoginComponent implements OnInit {
     }
 
     // convenience getter for easy access to form fields
-    get f() { return this.form.controls; }
+    get f() {
+        return this.form.controls;
+    }
 
     onSubmit() {
         this.submitted = true;
@@ -45,7 +48,6 @@ export class LoginComponent implements OnInit {
         if (this.form.invalid) {
             return;
         }
-
 
 
         this.loading = true;

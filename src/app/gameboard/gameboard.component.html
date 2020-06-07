@@ -1,21 +1,84 @@
 <p>gameboard works!</p>
-<table mdbTable borderless="true">
-    <tr mdbTableCol>
-        <td>{{gameStateLocal.cardsOnTable[11]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[10]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[9]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[8]}}</td>
-    </tr>
-    <tr mdbTableCol>
-        <td>{{gameStateLocal.cardsOnTable[7]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[6]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[5]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[4]}}</td>
-    </tr>
-    <tr mdbTableCol>
-        <td>{{gameStateLocal.cardsOnTable[3]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[2]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[1]}}</td>
-        <td>{{gameStateLocal.cardsOnTable[0]}}</td>
-    </tr>
-</table>
+<!--<div class="container">-->
+<!--    <div class="row" *ngFor="let number1 of [0,1,2]">-->
+<!--        <div class="col-sm" *ngFor="let number2 of [0,1,2,3]">-->
+<!--            {{gameStateLocal.cardsOnTable[number1*4+number2]}}-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <table mdbTable borderless="true">
+                <tr mdbTableCol *ngFor="let number1 of [0,1,2]">
+                    <td *ngFor="let number2 of [0,1,2,3]"
+                        [ngStyle]="{'background-color':gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable && gameStateLocal.isItMyTurn? 'aqua' : 'white'}">
+                        <div class="card" (click)="checkAddCard(11- (number1 * 4 + number2))">
+
+                            <!-- Card image -->
+                            <!--                <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" alt="Card image cap">-->
+
+                            <!-- Card content -->
+                            <div class="card-body">
+
+                                <!-- Title -->
+                                <!--                    <h4 class="card-title"><a>Card title</a></h4>-->
+                                <!-- Text -->
+                                <p class="card-text">
+                                    Points {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].points}}
+                                    Produces {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].produces}}
+                                    D {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].diamondCost}}
+                                    E {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].emeraldCost}}
+                                    R {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].rubyCost}}
+                                    S {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].saphireCost}}
+                                    O {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].onyxCost}}
+                                </p>
+                                <!-- Button -->
+                                <!--                    <a href="#" class="btn btn-primary">Button</a>-->
+
+                            </div>
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-sm">
+            <div class="card">
+                <div class="card-body">
+                    <table mdbTable borderless="true" width="100%">
+                        <tr mdbTableCol>
+                            <td *ngFor="let token of [0,1,2,3,4]">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-text">
+                                            {{gameStateLocal.tokens[token]}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr mdbTableCol>
+                            <td *ngFor="let token of ['d','e','r','s','o'], let i = index"
+                                [ngStyle]="{'background-color':gameStateLocal.tokens[i]> 0 && gameStateLocal.isItMyTurn? 'aqua' : 'white'}">
+                                <div class="card"
+                                     (click)="checkAddCoin(token, i)">
+                                    <div class="card-body">
+                                        <div class="card-text">
+                                            {{token}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="card" *ngFor="let player of gameStateLocal.players">
+                <div class="card-body">
+                    {{player}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

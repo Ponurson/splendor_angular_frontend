@@ -24,14 +24,27 @@ export class GameService {
     getGameState() {
         return this.http.get(`${environment.apiUrl}/game/getState`)
             .pipe(map(response => {
-                    type MyMapLikeType = Record<string, string>;
-                    const model: MyMapLikeType = {};
-                    Object.assign(model, response);
-                    return model;
+                type MyMapLikeType = Record<string, string>;
+                const model: MyMapLikeType = {};
+                Object.assign(model, response);
+                return model;
             }));
     }
 
     getFullState() {
         return this.http.get<GameState>(`${environment.apiUrl}/game/getFullState`);
+    }
+
+    sendTwoTokens(token: string) {
+        console.log(token);
+        return this.http.post(`${environment.apiUrl}/game/gainTwoTokens`, (token));
+    }
+
+    sendThreeTokens(firstToken: string, secondToken: string, thirdToken: string) {
+        return this.http.post(`${environment.apiUrl}/game/gainThreeTokens`, ({firstToken, secondToken, thirdToken}));
+    }
+
+    buyCardFromTable(id: string) {
+        return this.http.post(`${environment.apiUrl}/game/buyCard`, (id));
     }
 }

@@ -47,11 +47,11 @@ export class GameboardComponent implements OnInit {
     }
 
     checkAddCoin(token: string, i: number) {
-        if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[i] > 0) {
+        if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[token] > 0) {
             if (this.gameStateLocal.firstToken === undefined) {
                 this.gameStateLocal.firstToken = token;
             } else if (this.gameStateLocal.firstToken === token &&
-                this.gameStateLocal.tokens[i] > 3) {
+                this.gameStateLocal.tokens[token] > 3) {
                 this.gameStateLocal.secondToken = token;
                 this.gameService.sendTwoTokens(token)
                     .subscribe(data => {

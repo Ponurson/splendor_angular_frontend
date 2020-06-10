@@ -48,7 +48,7 @@
                 <div class="card-body">
                     <table mdbTable borderless="true" width="100%">
                         <tr mdbTableCol>
-                            <td *ngFor="let token of [0,1,2,3,4]">
+                            <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX']">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="card-text">
@@ -59,8 +59,8 @@
                             </td>
                         </tr>
                         <tr mdbTableCol>
-                            <td *ngFor="let token of ['d','e','r','s','o'], let i = index"
-                                [ngStyle]="{'background-color':gameStateLocal.tokens[i]> 0 && gameStateLocal.isItMyTurn? 'aqua' : 'white'}">
+                            <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX'], let i = index"
+                                [ngStyle]="{'background-color':gameStateLocal.tokens[token]> 0 && gameStateLocal.isItMyTurn? 'aqua' : 'white'}">
                                 <div class="card"
                                      (click)="checkAddCoin(token, i)">
                                     <div class="card-body">

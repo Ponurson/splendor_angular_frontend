@@ -18,6 +18,7 @@ export class GameboardComponent implements OnInit {
     user: User;
     lastPlayer: string;
     gameStateLocal: GameState;
+    private zeroTokens: number;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
@@ -47,19 +48,55 @@ export class GameboardComponent implements OnInit {
     }
 
     checkAddCoin(token: string, i: number) {
+        this.zeroTokens = 0;
+        for (const tokensKey in this.gameStateLocal.tokens) {
+            if (this.gameStateLocal.tokens[tokensKey] === 0) {
+               this.zeroTokens++;
+            }
+        }
+        if (this.zeroTokens === 5){
+            this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
+                this.gameStateLocal.secondToken).subscribe(data => {
+                console.log(data);
+                if (data instanceof GameState) {
+                    this.gameStateLocal = data;
+                }
+            });
+        }
         if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[token] > 0) {
             if (this.gameStateLocal.firstToken === undefined) {
                 this.gameStateLocal.firstToken = token;
+                if (this.zeroTokens === 4) {
+                    this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
+                        this.gameStateLocal.secondToken).subscribe(data => {
+                        console.log(data);
+                        if (data instanceof GameState) {
+                            this.gameStateLocal = data;
+                        }
+                    });
+                }
             } else if (this.gameStateLocal.firstToken === token &&
                 this.gameStateLocal.tokens[token] > 3) {
                 this.gameStateLocal.secondToken = token;
                 this.gameService.sendTwoTokens(token)
                     .subscribe(data => {
                         console.log(data);
+                        if (data instanceof GameState) {
+                            this.gameStateLocal = data;
+                        }
                     });
             } else if (this.gameStateLocal.firstToken !== token &&
                 this.gameStateLocal.secondToken === undefined) {
                 this.gameStateLocal.secondToken = token;
+                if (this.zeroTokens === 3) {
+                    this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
+                        this.gameStateLocal.secondToken).subscribe(data => {
+                        console.log(data);
+                        if (data instanceof GameState) {
+                            this.gameStateLocal = data;
+                        }
+                    });
+                }
             } else if (this.gameStateLocal.firstToken !== token &&
                 this.gameStateLocal.secondToken !== token &&
                 this.gameStateLocal.thirdToken === undefined) {
@@ -69,6 +106,9 @@ export class GameboardComponent implements OnInit {
                     this.gameStateLocal.thirdToken)
                     .subscribe(data => {
                         console.log(data);
+                        if (data instanceof GameState) {
+                            this.gameStateLocal = data;
+                        }
                     });
             }
         }
@@ -79,6 +119,9 @@ export class GameboardComponent implements OnInit {
             this.gameService.buyCardFromTable(this.gameStateLocal.cardsOnTable[i].id)
                 .subscribe(data => {
                     console.log(data);
+                    if (data instanceof GameState) {
+                        this.gameStateLocal = data;
+                    }
                 });
         }
     }

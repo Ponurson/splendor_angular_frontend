@@ -47,4 +47,8 @@ export class GameService {
     buyCardFromTable(id: string) {
         return this.http.post(`${environment.apiUrl}/game/buyCard`, (id));
     }
+
+    sendMixedTokens(firstToken: string, secondToken: string) {
+        return this.http.post(`${environment.apiUrl}/game/gainMixedTokens`, ({firstToken, secondToken}));
+    }
 }

@@ -13,10 +13,10 @@ import { AlertComponent } from './_components';
 import { HomeComponent } from './home';
 import {MatDialogModule} from '@angular/material/dialog';
 import { DialogComponent } from './dialog/dialog.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';;
-import { GameboardComponent } from './gameboard/gameboard.component'
-;
-import { CardsComponent } from './cards/cards.component'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GameboardComponent } from './gameboard/gameboard.component';
+import { CardsComponent } from './cards/cards.component';
+import { ReturnCoinsDialogComponent } from './return-coins-dialog/return-coins-dialog.component';
 @NgModule({
     imports: [
         BrowserModule,
@@ -32,7 +32,8 @@ import { CardsComponent } from './cards/cards.component'
         HomeComponent,
         DialogComponent ,
         GameboardComponent ,
-        CardsComponent  ],
+        CardsComponent ,
+        ReturnCoinsDialogComponent ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

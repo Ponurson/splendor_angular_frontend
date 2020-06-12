@@ -76,7 +76,14 @@
             </div>
             <div class="card" *ngFor="let player of gameStateLocal.players">
                 <div class="card-body">
-                    {{player}}
+                    Name {{player.playerName}}
+                    Points {{player.points}}
+                    Cards {{player.cardsOwnedShort}}
+                    D {{player.tokens['DIAMOND']}}
+                    E {{player.tokens['EMERALD']}}
+                    R {{player.tokens['RUBY']}}
+                    S {{player.tokens['SAPPHIRE']}}
+                    O {{player.tokens['ONYX']}}
                 </div>
             </div>
         </div>

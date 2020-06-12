@@ -5,7 +5,7 @@ import {GameState, User} from '@app/_models';
 import {AccountService, AlertService, GameService} from '@app/_services';
 import {config, interval, Observable} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
-import {DialogComponent} from '@app/dialog/dialog.component';
+import {ReturnCoinsDialogComponent} from '@app/return-coins-dialog/return-coins-dialog.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 
@@ -20,12 +20,14 @@ export class GameboardComponent implements OnInit {
     gameStateLocal: GameState;
     private zeroTokens: number;
 
+
     constructor(private route: ActivatedRoute,
                 private router: Router,
                 private accountService: AccountService,
                 private alertService: AlertService,
                 private http: HttpClient,
-                private gameService: GameService) {
+                private gameService: GameService,
+                private dialog: MatDialog) {
         this.user = this.accountService.userValue;
     }
 
@@ -58,8 +60,12 @@ export class GameboardComponent implements OnInit {
             this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
                 this.gameStateLocal.secondToken).subscribe(data => {
                 console.log(data);
-                if (data.message === 'Give back tokens'){
+                if (data.message === 'Give back tokens') {
                     console.log('give back tokens');
+                    const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                        width: '250px',
+                        // data: {howmany: data.challenger}
+                    });
                 }
                 this.gameService.getFullState()
                     .subscribe(gameState => {
@@ -75,8 +81,12 @@ export class GameboardComponent implements OnInit {
                     this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
                         this.gameStateLocal.secondToken).subscribe(data => {
                         console.log(data);
-                        if (data.message === 'Give back tokens'){
+                        if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
+                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                width: '250px',
+                                // data: {howmany: data.challenger}
+                            });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -91,8 +101,12 @@ export class GameboardComponent implements OnInit {
                 this.gameService.sendTwoTokens(token)
                     .subscribe(data => {
                         console.log(data);
-                        if (data.message === 'Give back tokens'){
+                        if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
+                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                width: '250px',
+                                // data: {howmany: data.challenger}
+                            });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -107,8 +121,12 @@ export class GameboardComponent implements OnInit {
                     this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
                         this.gameStateLocal.secondToken).subscribe(data => {
                         console.log(data);
-                        if (data.message === 'Give back tokens'){
+                        if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
+                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                width: '250px',
+                                // data: {howmany: data.challenger}
+                            });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -126,8 +144,12 @@ export class GameboardComponent implements OnInit {
                     this.gameStateLocal.thirdToken)
                     .subscribe(data => {
                         console.log(data);
-                        if (data.message === 'Give back tokens'){
+                        if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
+                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                width: '250px',
+                                // data: {howmany: data.challenger}
+                            });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -144,8 +166,12 @@ export class GameboardComponent implements OnInit {
             this.gameService.buyCardFromTable(this.gameStateLocal.cardsOnTable[i].id)
                 .subscribe(data => {
                     console.log(data);
-                    if (data.message === 'Give back tokens'){
+                    if (data.message === 'Give back tokens') {
                         console.log('give back tokens');
+                        const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                            width: '250px',
+                            // data: {howmany: data.challenger}
+                        });
                     }
                     this.gameService.getFullState()
                         .subscribe(gameState => {

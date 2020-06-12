@@ -1,8 +1,9 @@
 import {Card} from '@app/_models/card';
+import {Player} from '@app/_models/player';
 
 export class GameState {
     cardsOnTable: Card[];
-    players: string[];
+    players: Player[];
     tokens: Record<string, number>;
     isItMyTurn: boolean;
     firstToken: string;

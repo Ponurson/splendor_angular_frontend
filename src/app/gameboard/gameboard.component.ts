@@ -51,16 +51,21 @@ export class GameboardComponent implements OnInit {
         this.zeroTokens = 0;
         for (const tokensKey in this.gameStateLocal.tokens) {
             if (this.gameStateLocal.tokens[tokensKey] === 0) {
-               this.zeroTokens++;
+                this.zeroTokens++;
             }
         }
-        if (this.zeroTokens === 5){
+        if (this.zeroTokens === 5) {
             this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
                 this.gameStateLocal.secondToken).subscribe(data => {
                 console.log(data);
-                if (data instanceof GameState) {
-                    this.gameStateLocal = data;
+                if (data.message === 'Give back tokens'){
+                    console.log('give back tokens');
                 }
+                this.gameService.getFullState()
+                    .subscribe(gameState => {
+                        console.log(gameState);
+                        this.gameStateLocal = gameState;
+                    });
             });
         }
         if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[token] > 0) {
@@ -70,9 +75,14 @@ export class GameboardComponent implements OnInit {
                     this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
                         this.gameStateLocal.secondToken).subscribe(data => {
                         console.log(data);
-                        if (data instanceof GameState) {
-                            this.gameStateLocal = data;
+                        if (data.message === 'Give back tokens'){
+                            console.log('give back tokens');
                         }
+                        this.gameService.getFullState()
+                            .subscribe(gameState => {
+                                console.log(gameState);
+                                this.gameStateLocal = gameState;
+                            });
                     });
                 }
             } else if (this.gameStateLocal.firstToken === token &&
@@ -81,9 +91,14 @@ export class GameboardComponent implements OnInit {
                 this.gameService.sendTwoTokens(token)
                     .subscribe(data => {
                         console.log(data);
-                        if (data instanceof GameState) {
-                            this.gameStateLocal = data;
+                        if (data.message === 'Give back tokens'){
+                            console.log('give back tokens');
                         }
+                        this.gameService.getFullState()
+                            .subscribe(gameState => {
+                                console.log(gameState);
+                                this.gameStateLocal = gameState;
+                            });
                     });
             } else if (this.gameStateLocal.firstToken !== token &&
                 this.gameStateLocal.secondToken === undefined) {
@@ -92,9 +107,14 @@ export class GameboardComponent implements OnInit {
                     this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
                         this.gameStateLocal.secondToken).subscribe(data => {
                         console.log(data);
-                        if (data instanceof GameState) {
-                            this.gameStateLocal = data;
+                        if (data.message === 'Give back tokens'){
+                            console.log('give back tokens');
                         }
+                        this.gameService.getFullState()
+                            .subscribe(gameState => {
+                                console.log(gameState);
+                                this.gameStateLocal = gameState;
+                            });
                     });
                 }
             } else if (this.gameStateLocal.firstToken !== token &&
@@ -106,9 +126,14 @@ export class GameboardComponent implements OnInit {
                     this.gameStateLocal.thirdToken)
                     .subscribe(data => {
                         console.log(data);
-                        if (data instanceof GameState) {
-                            this.gameStateLocal = data;
+                        if (data.message === 'Give back tokens'){
+                            console.log('give back tokens');
                         }
+                        this.gameService.getFullState()
+                            .subscribe(gameState => {
+                                console.log(gameState);
+                                this.gameStateLocal = gameState;
+                            });
                     });
             }
         }
@@ -119,9 +144,14 @@ export class GameboardComponent implements OnInit {
             this.gameService.buyCardFromTable(this.gameStateLocal.cardsOnTable[i].id)
                 .subscribe(data => {
                     console.log(data);
-                    if (data instanceof GameState) {
-                        this.gameStateLocal = data;
+                    if (data.message === 'Give back tokens'){
+                        console.log('give back tokens');
                     }
+                    this.gameService.getFullState()
+                        .subscribe(gameState => {
+                            console.log(gameState);
+                            this.gameStateLocal = gameState;
+                        });
                 });
         }
     }

@@ -6,19 +6,24 @@ import {map} from 'rxjs/operators';
 
 import {environment} from '@environments/environment';
 import {User, Invitation, GameState} from '@app/_models';
+import {AccountService} from '@app/_services/account.service';
 
 
 @Injectable({providedIn: 'root'})
 export class GameService {
     private userSubject: BehaviorSubject<User>;
-    public user: Observable<User>;
+    public user: User;
+    private tokenSum: number;
+    private tokens: Record<string, number>;
 
     constructor(
         private router: Router,
-        private http: HttpClient
+        private http: HttpClient,
+        private accountService: AccountService
     ) {
-        this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('user')));
-        this.user = this.userSubject.asObservable();
+        // this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('user')));
+        // this.user = this.userSubject.asObservable();
+        this.user = this.accountService.userValue;
     }
 
     getGameState() {
@@ -37,18 +42,42 @@ export class GameService {
 
     sendTwoTokens(token: string) {
         console.log(token);
-        return this.http.post(`${environment.apiUrl}/game/gainTwoTokens`, (token));
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/gainTwoTokens`, (token));
     }
 
     sendThreeTokens(firstToken: string, secondToken: string, thirdToken: string) {
-        return this.http.post(`${environment.apiUrl}/game/gainThreeTokens`, ({firstToken, secondToken, thirdToken}));
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/gainThreeTokens`, ({
+            firstToken,
+            secondToken,
+            thirdToken
+        }));
     }
 
     buyCardFromTable(id: string) {
-        return this.http.post(`${environment.apiUrl}/game/buyCard`, (id));
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/buyCard`, (id));
     }
 
     sendMixedTokens(firstToken: string, secondToken: string) {
-        return this.http.post(`${environment.apiUrl}/game/gainMixedTokens`, ({firstToken, secondToken}));
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/gainMixedTokens`, ({firstToken, secondToken}));
+    }
+
+    processTokenReturn() {
+        return this.getFullState()
+            .pipe(map(gameState => {
+                const players = gameState.players;
+                const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
+                this.tokens = currentPlayer.tokens;
+                this.tokenSum = 0;
+                // tslint:disable-next-line:forin
+                for (const tokensKey in this.tokens) {
+                    this.tokenSum += this.tokens[tokensKey];
+                }
+                // console.log(this.tokenSum - 10);
+                return {howMany: (this.tokenSum - 10), tokenState: this.tokens};
+            }));
+    }
+
+    returnTokensToTable(tokensToGiveBack: any[]) {
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/returnTokensToTable`, (tokensToGiveBack));
     }
 }

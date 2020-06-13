@@ -4,7 +4,7 @@ import {GameState, User} from '@app/_models';
 
 import {AccountService, AlertService, GameService} from '@app/_services';
 import {config, interval, Observable} from 'rxjs';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ReturnCoinsDialogComponent} from '@app/return-coins-dialog/return-coins-dialog.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
@@ -19,6 +19,7 @@ export class GameboardComponent implements OnInit {
     lastPlayer: string;
     gameStateLocal: GameState;
     private zeroTokens: number;
+    private dialogRef: MatDialogRef<ReturnCoinsDialogComponent, any>;
 
 
     constructor(private route: ActivatedRoute,
@@ -62,10 +63,15 @@ export class GameboardComponent implements OnInit {
                 console.log(data);
                 if (data.message === 'Give back tokens') {
                     console.log('give back tokens');
-                    const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                        width: '250px',
-                        // data: {howmany: data.challenger}
-                    });
+                    this.gameService.processTokenReturn()
+                        .pipe(first())
+                        .subscribe(dataInside => {
+                            console.log(dataInside.howMany);
+                            this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                width: '250px',
+                                data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                            });
+                        });
                 }
                 this.gameService.getFullState()
                     .subscribe(gameState => {
@@ -83,10 +89,15 @@ export class GameboardComponent implements OnInit {
                         console.log(data);
                         if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
-                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                width: '250px',
-                                // data: {howmany: data.challenger}
-                            });
+                            this.gameService.processTokenReturn()
+                                .pipe(first())
+                                .subscribe(dataInside => {
+                                    console.log(dataInside.howMany);
+                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                        width: '250px',
+                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                    });
+                                });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -103,10 +114,15 @@ export class GameboardComponent implements OnInit {
                         console.log(data);
                         if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
-                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                width: '250px',
-                                // data: {howmany: data.challenger}
-                            });
+                            this.gameService.processTokenReturn()
+                                .pipe(first())
+                                .subscribe(dataInside => {
+                                    console.log(dataInside.howMany);
+                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                        width: '250px',
+                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                    });
+                                });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -123,10 +139,15 @@ export class GameboardComponent implements OnInit {
                         console.log(data);
                         if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
-                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                width: '250px',
-                                // data: {howmany: data.challenger}
-                            });
+                            this.gameService.processTokenReturn()
+                                .pipe(first())
+                                .subscribe(dataInside => {
+                                    console.log(dataInside.howMany);
+                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                        width: '250px',
+                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                    });
+                                });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -146,10 +167,15 @@ export class GameboardComponent implements OnInit {
                         console.log(data);
                         if (data.message === 'Give back tokens') {
                             console.log('give back tokens');
-                            const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                width: '250px',
-                                // data: {howmany: data.challenger}
-                            });
+                            this.gameService.processTokenReturn()
+                                .pipe(first())
+                                .subscribe(dataInside => {
+                                    console.log(dataInside.howMany);
+                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                        width: '250px',
+                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                    });
+                                });
                         }
                         this.gameService.getFullState()
                             .subscribe(gameState => {
@@ -168,10 +194,15 @@ export class GameboardComponent implements OnInit {
                     console.log(data);
                     if (data.message === 'Give back tokens') {
                         console.log('give back tokens');
-                        const dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                            width: '250px',
-                            // data: {howmany: data.challenger}
-                        });
+                        this.gameService.processTokenReturn()
+                            .pipe(first())
+                            .subscribe(dataInside => {
+                                console.log(dataInside.howMany);
+                                this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                    width: '250px',
+                                    data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                });
+                            });
                     }
                     this.gameService.getFullState()
                         .subscribe(gameState => {

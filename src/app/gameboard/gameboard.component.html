@@ -58,7 +58,7 @@
                 <div class="card-body">
                     <table mdbTable borderless="true" width="100%">
                         <tr mdbTableCol>
-                            <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX']">
+                            <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="card-text">
@@ -80,6 +80,16 @@
                                     </div>
                                 </div>
                             </td>
+                            <td [ngStyle]="{'background-color':gameStateLocal.tokens['GOLD']> 0 && gameStateLocal.isItMyTurn && gameStateLocal.firstToken === undefined? 'aqua' : 'white'}">
+                                <div class="card"
+                                     (click)="checkAddGold('GOLD')">
+                                    <div class="card-body">
+                                        <div class="card-text">
+                                            GOLD
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -94,6 +104,7 @@
                     R {{player.tokens['RUBY']}}
                     S {{player.tokens['SAPPHIRE']}}
                     O {{player.tokens['ONYX']}}
+                    G {{player.tokens['GOLD']}}
                 </div>
             </div>
         </div>

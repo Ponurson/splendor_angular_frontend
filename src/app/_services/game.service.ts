@@ -80,4 +80,8 @@ export class GameService {
     returnTokensToTable(tokensToGiveBack: any[]) {
         return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/returnTokensToTable`, (tokensToGiveBack));
     }
+
+    sendGoldToken() {
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/gainGoldToken`, (''));
+    }
 }

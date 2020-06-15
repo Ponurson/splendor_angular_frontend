@@ -212,4 +212,32 @@ export class GameboardComponent implements OnInit {
                 });
         }
     }
+
+    checkAddGold(gold: string) {
+        if (this.gameStateLocal.isItMyTurn &&
+            this.gameStateLocal.tokens[gold] > 0 &&
+        this.gameStateLocal.firstToken === undefined){
+            this.gameService.sendGoldToken()
+                .subscribe(data => {
+                    console.log(data);
+                    if (data.message === 'Give back tokens') {
+                        console.log('give back tokens');
+                        this.gameService.processTokenReturn()
+                            .pipe(first())
+                            .subscribe(dataInside => {
+                                console.log(dataInside.howMany);
+                                this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                    width: '250px',
+                                    data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                });
+                            });
+                    }
+                    this.gameService.getFullState()
+                        .subscribe(gameState => {
+                            console.log(gameState);
+                            this.gameStateLocal = gameState;
+                        });
+                });
+        }
+    }
 }

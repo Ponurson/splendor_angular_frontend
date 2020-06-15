@@ -4,3 +4,4 @@ export * from './invite';
 export * from './gameState';
 export * from './card';
 export * from './player';
+export * from './noble';

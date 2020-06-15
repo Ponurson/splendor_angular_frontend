@@ -43,6 +43,16 @@
                 </tr>
             </table>
         </div>
+        <div class="card" *ngFor="let noble of gameStateLocal.nobles">
+            <div class="card-body">
+                Points {{noble.points}}
+                D {{noble.cardCombination['DIAMOND']}}
+                E {{noble.cardCombination['EMERALD']}}
+                R {{noble.cardCombination['RUBY']}}
+                S {{noble.cardCombination['SAPPHIRE']}}
+                O {{noble.cardCombination['ONYX']}}
+            </div>
+        </div>
         <div class="col-sm">
             <div class="card">
                 <div class="card-body">

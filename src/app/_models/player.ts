@@ -8,4 +8,5 @@ export class Player {
     nobles: Noble[];
     tokens: Record<string, number>;
     cardsOwnedShort: Record<string, number>;
+    cardsInHand: Card[];
 }

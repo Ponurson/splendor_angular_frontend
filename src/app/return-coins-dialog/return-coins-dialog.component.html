@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>Hi </h1>
+<div mat-dialog-content>
+    <p>You need to return {{data.howMany}} tokens</p>
+    <div class="card">
+        <div class="card-body">
+            <table mdbTable borderless="true" width="100%">
+                <tr mdbTableCol>
+                    <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX']">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-text">
+                                    {{data.tokenState[token]}}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr mdbTableCol>
+                    <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD'], let i = index"
+                        [ngStyle]="{'background-color':data.tokenState[token]> 0 ? 'aqua' : 'white'}">
+                        <div class="card"
+                             (click)="checkRemoveCoin(token, i, data.howMany)">
+                            <div class="card-body">
+                                <div class="card-text">
+                                    {{token}}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

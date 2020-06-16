@@ -53,8 +53,12 @@ export class GameService {
         }));
     }
 
-    buyCardFromTable(id: string) {
-        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/buyCard`, (id));
+    getCardFromTable(id: string, isItReserveTime: boolean) {
+        if (!isItReserveTime) {
+            return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/buyCard`, (id));
+        }else {
+            return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/reserveCard`, (id));
+        }
     }
 
     sendMixedTokens(firstToken: string, secondToken: string) {
@@ -82,6 +86,10 @@ export class GameService {
     }
 
     sendGoldToken() {
-        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/gainGoldToken`, (''));
+        return this.http.post<GameState>(`${environment.apiUrl}/game/gainGoldToken`, (''));
+    }
+
+    reserveCardFromDeck(number1: number) {
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/reserveCardFromDeck`, (number1));
     }
 }

@@ -8,6 +8,7 @@ export class GameState {
     tokens: Record<string, number>;
     nobles: Noble[];
     isItMyTurn: boolean;
+    isItReserveTime: boolean;
     firstToken: string;
     secondToken: string;
     thirdToken: string;

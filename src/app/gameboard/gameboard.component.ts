@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {first, flatMap} from 'rxjs/operators';
-import {GameState, User} from '@app/_models';
+import {Card, GameState, User} from '@app/_models';
 
 import {AccountService, AlertService, GameService} from '@app/_services';
 import {config, interval, Observable} from 'rxjs';
@@ -18,6 +18,7 @@ export class GameboardComponent implements OnInit {
     user: User;
     lastPlayer: string;
     gameStateLocal: GameState;
+    cardsInHand: Card[];
     private zeroTokens: number;
     private dialogRef: MatDialogRef<ReturnCoinsDialogComponent, any>;
 
@@ -44,6 +45,9 @@ export class GameboardComponent implements OnInit {
                         .subscribe(gameState => {
                             console.log(gameState);
                             this.gameStateLocal = gameState;
+                            const players = gameState.players;
+                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
+                            this.cardsInHand = currentPlayer.cardsInHand;
                         });
                 }
                 this.lastPlayer = data.state;
@@ -51,146 +55,16 @@ export class GameboardComponent implements OnInit {
     }
 
     checkAddCoin(token: string, i: number) {
-        this.zeroTokens = 0;
-        for (const tokensKey in this.gameStateLocal.tokens) {
-            if (this.gameStateLocal.tokens[tokensKey] === 0) {
-                this.zeroTokens++;
+        if (!this.gameStateLocal.isItReserveTime) {
+            this.zeroTokens = 0;
+            for (const tokensKey in this.gameStateLocal.tokens) {
+                if (this.gameStateLocal.tokens[tokensKey] === 0) {
+                    this.zeroTokens++;
+                }
             }
-        }
-        if (this.zeroTokens === 5) {
-            this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
-                this.gameStateLocal.secondToken).subscribe(data => {
-                console.log(data);
-                if (data.message === 'Give back tokens') {
-                    console.log('give back tokens');
-                    this.gameService.processTokenReturn()
-                        .pipe(first())
-                        .subscribe(dataInside => {
-                            console.log(dataInside.howMany);
-                            this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                width: '250px',
-                                data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                            });
-                        });
-                }
-                this.gameService.getFullState()
-                    .subscribe(gameState => {
-                        console.log(gameState);
-                        this.gameStateLocal = gameState;
-                    });
-            });
-        }
-        if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[token] > 0) {
-            if (this.gameStateLocal.firstToken === undefined) {
-                this.gameStateLocal.firstToken = token;
-                if (this.zeroTokens === 4) {
-                    this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
-                        this.gameStateLocal.secondToken).subscribe(data => {
-                        console.log(data);
-                        if (data.message === 'Give back tokens') {
-                            console.log('give back tokens');
-                            this.gameService.processTokenReturn()
-                                .pipe(first())
-                                .subscribe(dataInside => {
-                                    console.log(dataInside.howMany);
-                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                        width: '250px',
-                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                    });
-                                });
-                        }
-                        this.gameService.getFullState()
-                            .subscribe(gameState => {
-                                console.log(gameState);
-                                this.gameStateLocal = gameState;
-                            });
-                    });
-                }
-            } else if (this.gameStateLocal.firstToken === token &&
-                this.gameStateLocal.tokens[token] > 3) {
-                this.gameStateLocal.secondToken = token;
-                this.gameService.sendTwoTokens(token)
-                    .subscribe(data => {
-                        console.log(data);
-                        if (data.message === 'Give back tokens') {
-                            console.log('give back tokens');
-                            this.gameService.processTokenReturn()
-                                .pipe(first())
-                                .subscribe(dataInside => {
-                                    console.log(dataInside.howMany);
-                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                        width: '250px',
-                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                    });
-                                });
-                        }
-                        this.gameService.getFullState()
-                            .subscribe(gameState => {
-                                console.log(gameState);
-                                this.gameStateLocal = gameState;
-                            });
-                    });
-            } else if (this.gameStateLocal.firstToken !== token &&
-                this.gameStateLocal.secondToken === undefined) {
-                this.gameStateLocal.secondToken = token;
-                if (this.zeroTokens === 3) {
-                    this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
-                        this.gameStateLocal.secondToken).subscribe(data => {
-                        console.log(data);
-                        if (data.message === 'Give back tokens') {
-                            console.log('give back tokens');
-                            this.gameService.processTokenReturn()
-                                .pipe(first())
-                                .subscribe(dataInside => {
-                                    console.log(dataInside.howMany);
-                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                        width: '250px',
-                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                    });
-                                });
-                        }
-                        this.gameService.getFullState()
-                            .subscribe(gameState => {
-                                console.log(gameState);
-                                this.gameStateLocal = gameState;
-                            });
-                    });
-                }
-            } else if (this.gameStateLocal.firstToken !== token &&
-                this.gameStateLocal.secondToken !== token &&
-                this.gameStateLocal.thirdToken === undefined) {
-                this.gameStateLocal.thirdToken = token;
-                this.gameService.sendThreeTokens(this.gameStateLocal.firstToken,
-                    this.gameStateLocal.secondToken,
-                    this.gameStateLocal.thirdToken)
-                    .subscribe(data => {
-                        console.log(data);
-                        if (data.message === 'Give back tokens') {
-                            console.log('give back tokens');
-                            this.gameService.processTokenReturn()
-                                .pipe(first())
-                                .subscribe(dataInside => {
-                                    console.log(dataInside.howMany);
-                                    this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                        width: '250px',
-                                        data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                    });
-                                });
-                        }
-                        this.gameService.getFullState()
-                            .subscribe(gameState => {
-                                console.log(gameState);
-                                this.gameStateLocal = gameState;
-                            });
-                    });
-            }
-        }
-    }
-
-    checkAddCard(i: number) {
-        if (this.gameStateLocal.cardsOnTable[i].clickable) {
-            this.gameService.buyCardFromTable(this.gameStateLocal.cardsOnTable[i].id)
-                .subscribe(data => {
+            if (this.zeroTokens === 5) {
+                this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
+                    this.gameStateLocal.secondToken).subscribe(data => {
                     console.log(data);
                     if (data.message === 'Give back tokens') {
                         console.log('give back tokens');
@@ -210,14 +84,119 @@ export class GameboardComponent implements OnInit {
                             this.gameStateLocal = gameState;
                         });
                 });
+            }
+            if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[token] > 0) {
+                if (this.gameStateLocal.firstToken === undefined) {
+                    this.gameStateLocal.firstToken = token;
+                    if (this.zeroTokens === 4) {
+                        this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
+                            this.gameStateLocal.secondToken).subscribe(data => {
+                            console.log(data);
+                            if (data.message === 'Give back tokens') {
+                                console.log('give back tokens');
+                                this.gameService.processTokenReturn()
+                                    .pipe(first())
+                                    .subscribe(dataInside => {
+                                        console.log(dataInside.howMany);
+                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                            width: '250px',
+                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                        });
+                                    });
+                            }
+                            this.gameService.getFullState()
+                                .subscribe(gameState => {
+                                    console.log(gameState);
+                                    this.gameStateLocal = gameState;
+                                });
+                        });
+                    }
+                } else if (this.gameStateLocal.firstToken === token &&
+                    this.gameStateLocal.tokens[token] > 3) {
+                    this.gameStateLocal.secondToken = token;
+                    this.gameService.sendTwoTokens(token)
+                        .subscribe(data => {
+                            console.log(data);
+                            if (data.message === 'Give back tokens') {
+                                console.log('give back tokens');
+                                this.gameService.processTokenReturn()
+                                    .pipe(first())
+                                    .subscribe(dataInside => {
+                                        console.log(dataInside.howMany);
+                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                            width: '250px',
+                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                        });
+                                    });
+                            }
+                            this.gameService.getFullState()
+                                .subscribe(gameState => {
+                                    console.log(gameState);
+                                    this.gameStateLocal = gameState;
+                                });
+                        });
+                } else if (this.gameStateLocal.firstToken !== token &&
+                    this.gameStateLocal.secondToken === undefined) {
+                    this.gameStateLocal.secondToken = token;
+                    if (this.zeroTokens === 3) {
+                        this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
+                            this.gameStateLocal.secondToken).subscribe(data => {
+                            console.log(data);
+                            if (data.message === 'Give back tokens') {
+                                console.log('give back tokens');
+                                this.gameService.processTokenReturn()
+                                    .pipe(first())
+                                    .subscribe(dataInside => {
+                                        console.log(dataInside.howMany);
+                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                            width: '250px',
+                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                        });
+                                    });
+                            }
+                            this.gameService.getFullState()
+                                .subscribe(gameState => {
+                                    console.log(gameState);
+                                    this.gameStateLocal = gameState;
+                                });
+                        });
+                    }
+                } else if (this.gameStateLocal.firstToken !== token &&
+                    this.gameStateLocal.secondToken !== token &&
+                    this.gameStateLocal.thirdToken === undefined) {
+                    this.gameStateLocal.thirdToken = token;
+                    this.gameService.sendThreeTokens(this.gameStateLocal.firstToken,
+                        this.gameStateLocal.secondToken,
+                        this.gameStateLocal.thirdToken)
+                        .subscribe(data => {
+                            console.log(data);
+                            if (data.message === 'Give back tokens') {
+                                console.log('give back tokens');
+                                this.gameService.processTokenReturn()
+                                    .pipe(first())
+                                    .subscribe(dataInside => {
+                                        console.log(dataInside.howMany);
+                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                            width: '250px',
+                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                        });
+                                    });
+                            }
+                            this.gameService.getFullState()
+                                .subscribe(gameState => {
+                                    console.log(gameState);
+                                    this.gameStateLocal = gameState;
+                                });
+                        });
+                }
+            }
         }
     }
 
-    checkAddGold(gold: string) {
-        if (this.gameStateLocal.isItMyTurn &&
-            this.gameStateLocal.tokens[gold] > 0 &&
-        this.gameStateLocal.firstToken === undefined){
-            this.gameService.sendGoldToken()
+    checkAddCard(i: Card) {
+        if (i.clickable) {
+            this.gameService.getCardFromTable(i.id,
+                this.gameStateLocal.isItReserveTime)
                 .subscribe(data => {
                     console.log(data);
                     if (data.message === 'Give back tokens') {
@@ -236,6 +215,50 @@ export class GameboardComponent implements OnInit {
                         .subscribe(gameState => {
                             console.log(gameState);
                             this.gameStateLocal = gameState;
+                            const players = gameState.players;
+                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
+                            this.cardsInHand = currentPlayer.cardsInHand;
+                        });
+                });
+        }
+    }
+
+    checkAddGold(gold: string) {
+        if (this.gameStateLocal.isItMyTurn &&
+            this.gameStateLocal.tokens[gold] > 0 &&
+            this.gameStateLocal.firstToken === undefined) {
+            this.gameService.sendGoldToken()
+                .subscribe(gameState => {
+                    console.log(gameState);
+                    this.gameStateLocal = gameState;
+                });
+        }
+    }
+
+    checkReserveCardFromDeck(number1: number) {
+        if (this.gameStateLocal.isItReserveTime){
+            this.gameService.reserveCardFromDeck(number1)
+                .subscribe(data => {
+                    console.log(data);
+                    if (data.message === 'Give back tokens') {
+                        console.log('give back tokens');
+                        this.gameService.processTokenReturn()
+                            .pipe(first())
+                            .subscribe(dataInside => {
+                                console.log(dataInside.howMany);
+                                this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                                    width: '250px',
+                                    data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                                });
+                            });
+                    }
+                    this.gameService.getFullState()
+                        .subscribe(gameState => {
+                            console.log(gameState);
+                            this.gameStateLocal = gameState;
+                            const players = gameState.players;
+                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
+                            this.cardsInHand = currentPlayer.cardsInHand;
                         });
                 });
         }

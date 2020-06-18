@@ -92,4 +92,8 @@ export class GameService {
     reserveCardFromDeck(number1: number) {
         return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/reserveCardFromDeck`, (number1));
     }
+
+    setHasSeenResults() {
+        return this.http.get<Record<string, string>>(`${environment.apiUrl}/game/hasSeenResults`);
+    }
 }

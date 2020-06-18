@@ -17,6 +17,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameboardComponent } from './gameboard/gameboard.component';
 import { CardsComponent } from './cards/cards.component';
 import { ReturnCoinsDialogComponent } from './return-coins-dialog/return-coins-dialog.component';
+import { GameEndDialogComponent } from './game-end-dialog/game-end-dialog.component';
 @NgModule({
     imports: [
         BrowserModule,
@@ -33,7 +34,8 @@ import { ReturnCoinsDialogComponent } from './return-coins-dialog/return-coins-d
         DialogComponent ,
         GameboardComponent ,
         CardsComponent ,
-        ReturnCoinsDialogComponent ],
+        ReturnCoinsDialogComponent ,
+        GameEndDialogComponent],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

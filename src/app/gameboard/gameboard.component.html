@@ -1,23 +1,23 @@
-<div class="container h-100">
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-8">
-            <div class="row m-1">
-                <div class="col-2" *ngFor="let noble of gameStateLocal.nobles">
+            <div class="row m-1 ml-1 mr-1">
+                <div class="col-2 pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles">
                     <img [src]="noble.graphic" class="img-fluid" alt="Responsive image">
                 </div>
             </div>
-            <div class="row m-1" *ngFor="let number1 of [0,1,2]">
-                <div class="col" (click)="checkReserveCardFromDeck(3-number1)">
+            <div class="row m-1 ml-1 mr-1" *ngFor="let number1 of [0,1,2]">
+                <div class="col pl-1 pr-1" (click)="checkReserveCardFromDeck(3-number1)">
                     <p class="card-text">
-                        <img src="assets/back-{{3-number1}}.jpg"
-                             class="img-fluid" alt="Responsive image"
+                        <img src="assets/back-{{3-number1}}.png"
+                             class="img-fluid crd" alt="Responsive image"
                              [ngStyle]="{'box-shadow':gameStateLocal.isItReserveTime? '0 0 0 0.2rem yellow' : '0 0 0 0.2rem white'}">
                     </p>
                 </div>
-                <div class="col" *ngFor="let number2 of [0,1,2,3]"
+                <div class="col pl-1 pr-1" *ngFor="let number2 of [0,1,2,3]"
                      (click)="checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])">
                     <img src="{{gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].graphic}}"
-                         class="img-fluid" alt="Responsive image"
+                         class="img-fluid crd" alt="Responsive image"
                          [ngStyle]="{'box-shadow':gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable &&
                          gameStateLocal.isItMyTurn? (!gameStateLocal.isItReserveTime? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem yellow') : '0 0 0 0.2rem white'}"
                     >
@@ -52,17 +52,17 @@
             </div>
 
             <div class="row m-1">
-                <div class="col-4" *ngFor="let card of cardsInHand"
+                <div class="col-4 mt-1 mb-1" *ngFor="let card of cardsInHand"
                      (click)="checkAddCard(card)">
                     <img src="{{card.graphic}}"
-                         class="img-fluid" alt="Responsive image"
+                         class="img-fluid crd" alt="Responsive image"
                          [ngStyle]="{'box-shadow':card.clickable &&
                          gameStateLocal.isItMyTurn? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white'}"
                     >
                 </div>
             </div>
 
-            <div class="row m-1 border" *ngFor="let player of gameStateLocal.players"
+            <div class="row m-1 border mt1-1 mb-1" *ngFor="let player of gameStateLocal.players"
                  [ngStyle]="{'box-shadow':player.playerName === gameStateLocal.currentPlayerName? '0 0 0 0.2rem red' : '0 0 0 0.2rem white'}">
                 <div class="row m-1">
                     <div class="col-12">
@@ -82,7 +82,7 @@
                 </div>
                 <div class="row m-1">
                     <div class="col" *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
-                        <img src="assets/{{token}}.png" class="img-fluid" alt="Responsive image">
+                        <img src="assets/{{token}}.png" class="img-fluid crd" alt="Responsive image">
                     </div>
                     <div class="w-100"></div>
                     <div class="col text-center"

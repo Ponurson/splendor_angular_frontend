@@ -11,9 +11,9 @@ import {GameService} from '@app/_services';
 export class ReturnCoinsDialogComponent {
   private tokensToGiveBack: string[];
 
-  constructor( public dialogRef: MatDialogRef<GameboardComponent>,
-               @Inject(MAT_DIALOG_DATA) public data: any,
-               private gameService: GameService) {
+  constructor(public dialogRef: MatDialogRef<GameboardComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any,
+              private gameService: GameService) {
     this.tokensToGiveBack = [];
   }
 
@@ -22,14 +22,16 @@ export class ReturnCoinsDialogComponent {
   }
 
   checkRemoveCoin(token: string, i: number, howMany: number) {
-    this.tokensToGiveBack.push(token);
-    this.data.tokenState[token] -= 1;
-    if (this.tokensToGiveBack.length === howMany){
-      console.log('wtf');
-      this.gameService.returnTokensToTable(this.tokensToGiveBack).subscribe(response => {
-        console.log(response);
-        this.dialogRef.close();
-      });
+    if (this.data.tokenState[token] > 0) {
+      this.tokensToGiveBack.push(token);
+      this.data.tokenState[token] -= 1;
+      if (this.tokensToGiveBack.length === howMany) {
+        console.log('wtf');
+        this.gameService.returnTokensToTable(this.tokensToGiveBack).subscribe(response => {
+          console.log(response);
+          this.dialogRef.close();
+        });
+      }
     }
   }
 }

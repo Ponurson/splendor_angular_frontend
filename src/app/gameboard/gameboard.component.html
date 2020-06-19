@@ -1,144 +1,94 @@
-<p>gameboard works!</p>
-<!--<div class="container">-->
-<!--    <div class="row" *ngFor="let number1 of [0,1,2]">-->
-<!--        <div class="col-sm" *ngFor="let number2 of [0,1,2,3]">-->
-<!--            {{gameStateLocal.cardsOnTable[number1*4+number2]}}-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<div class="container">
+<div class="container h-100">
     <div class="row">
-        <div class="col-sm">
-            <table mdbTable borderless="true">
-                <tr mdbTableCol *ngFor="let number1 of [0,1,2]">
-                    <td [ngStyle]="{'background-color':gameStateLocal.isItReserveTime? 'yellow' : 'white'}">
-                        <div class="card" (click)="checkReserveCardFromDeck(3-number1)">
-                            <div class="card-body">
-                                <p class="card-text">
-                                    {{3-number1}}
-                                </p>
-                            </div>
-                        </div>
-                    </td>
-                    <td *ngFor="let number2 of [0,1,2,3]"
-                        [ngStyle]="{'background-color':gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable &&
-                         gameStateLocal.isItMyTurn? (!gameStateLocal.isItReserveTime? 'aqua' : 'yellow') : 'white'}">
-                        <div class="card" (click)="checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])">
-
-                            <!-- Card image -->
-                            <!--                <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" alt="Card image cap">-->
-
-                            <!-- Card content -->
-                            <div class="card-body">
-
-                                <!-- Title -->
-                                <!--                    <h4 class="card-title"><a>Card title</a></h4>-->
-                                <!-- Text -->
-                                <p class="card-text">
-                                    Points {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].points}}
-                                    Produces {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].produces}}
-                                    D {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].cost['DIAMOND']}}
-                                    E {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].cost['EMERALD']}}
-                                    R {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].cost['RUBY']}}
-                                    S {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].cost['SAPPHIRE']}}
-                                    O {{gameStateLocal.cardsOnTable[11 - (number1 * 4 + number2)].cost['ONYX']}}
-                                </p>
-                                <!-- Button -->
-                                <!--                    <a href="#" class="btn btn-primary">Button</a>-->
-
-                            </div>
-
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="card" *ngFor="let card of cardsInHand"
-             [ngStyle]="{'background-color':card.clickable &&
-                         gameStateLocal.isItMyTurn? 'aqua' : 'white'}">
-            <div class="card-body"
-                 (click)="checkAddCard(card)">
-                <p class="card-text">
-                    Points {{card.points}}
-                    Produces {{card.produces}}
-                    D {{card.cost['DIAMOND']}}
-                    E {{card.cost['EMERALD']}}
-                    R {{card.cost['RUBY']}}
-                    S {{card.cost['SAPPHIRE']}}
-                    O {{card.cost['ONYX']}}
-                <p class="card-text">
-            </div>
-        </div>
-
-        <div class="card" *ngFor="let noble of gameStateLocal.nobles">
-            <div class="card-body">
-                Points {{noble.points}}
-                D {{noble.cardCombination['DIAMOND']}}
-                E {{noble.cardCombination['EMERALD']}}
-                R {{noble.cardCombination['RUBY']}}
-                S {{noble.cardCombination['SAPPHIRE']}}
-                O {{noble.cardCombination['ONYX']}}
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="card">
-                <div class="card-body">
-                    <table mdbTable borderless="true" width="100%">
-                        <tr mdbTableCol>
-                            <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="card-text">
-                                            {{gameStateLocal.tokens[token]}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr mdbTableCol>
-                            <td *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX'], let i = index"
-                                [ngStyle]="{'background-color':gameStateLocal.tokens[token]> 0 &&
-                                 gameStateLocal.isItMyTurn &&
-                                 !gameStateLocal.isItReserveTime? 'aqua' : 'white'}">
-                                <div class="card"
-                                     (click)="checkAddCoin(token, i)">
-                                    <div class="card-body">
-                                        <div class="card-text">
-                                            {{token}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td [ngStyle]="{'background-color':gameStateLocal.tokens['GOLD']> 0 &&
-                             gameStateLocal.isItMyTurn &&
-                              gameStateLocal.firstToken === undefined &&
-                              !gameStateLocal.isItReserveTime ? 'aqua' : 'white'}">
-                                <div class="card"
-                                     (click)="checkAddGold('GOLD')">
-                                    <div class="card-body">
-                                        <div class="card-text">
-                                            GOLD
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+        <div class="col-sm-8">
+            <div class="row m-1">
+                <div class="col-2" *ngFor="let noble of gameStateLocal.nobles">
+                    <img [src]="noble.graphic" class="img-fluid" alt="Responsive image">
                 </div>
             </div>
-            <div class="card" *ngFor="let player of gameStateLocal.players">
-                <div class="card-body">
-                    Name {{player.playerName}}
-                    Points {{player.points}}
-                    Cards {{player.cardsOwnedShort}}
-                    In Hand{{player.cardsInHand.length}}
-                    D {{player.tokens['DIAMOND']}}
-                    E {{player.tokens['EMERALD']}}
-                    R {{player.tokens['RUBY']}}
-                    S {{player.tokens['SAPPHIRE']}}
-                    O {{player.tokens['ONYX']}}
-                    G {{player.tokens['GOLD']}}
+            <div class="row m-1" *ngFor="let number1 of [0,1,2]">
+                <div class="col" (click)="checkReserveCardFromDeck(3-number1)">
+                    <p class="card-text">
+                        <img src="assets/back-{{3-number1}}.jpg"
+                             class="img-fluid" alt="Responsive image"
+                             [ngStyle]="{'box-shadow':gameStateLocal.isItReserveTime? '0 0 0 0.2rem yellow' : '0 0 0 0.2rem white'}">
+                    </p>
+                </div>
+                <div class="col" *ngFor="let number2 of [0,1,2,3]"
+                     (click)="checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])">
+                    <img src="{{gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].graphic}}"
+                         class="img-fluid" alt="Responsive image"
+                         [ngStyle]="{'box-shadow':gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable &&
+                         gameStateLocal.isItMyTurn? (!gameStateLocal.isItReserveTime? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem yellow') : '0 0 0 0.2rem white'}"
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="row m-1">
+                <div class="col text-center"
+                     *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
+                    {{gameStateLocal.tokens[token]}}
+                </div>
+                <div class="w-100"></div>
+                <div class="col" *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX'], let i = index"
+                     (click)="checkAddCoin(token, i)">
+                    <img src="assets/{{token}}.png" class="img-fluid" alt="Responsive image"
+                         [ngStyle]="{'box-shadow':gameStateLocal.tokens[token]> 0 &&
+                                 gameStateLocal.isItMyTurn &&
+                                 !gameStateLocal.isItReserveTime? (token !== gameStateLocal.firstToken ?
+                                 (token !== gameStateLocal.secondToken ? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white') :
+                                 (gameStateLocal.tokens[token]> 3 && gameStateLocal.secondToken === undefined? '0 0 0 0.2rem brown' :
+                                  '0 0 0 0.2rem white')) : '0 0 0 0.2rem white'}"
+                    >
+                </div>
+                <div class="col" (click)="checkAddGold('GOLD')">
+                    <img src="assets/GOLD.png" class="img-fluid" alt="Responsive image"
+                         [ngStyle]="{'box-shadow':gameStateLocal.tokens['GOLD']> 0 &&
+                             gameStateLocal.isItMyTurn &&
+                              gameStateLocal.firstToken === undefined &&
+                              !gameStateLocal.isItReserveTime ? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white'}">
+                </div>
+            </div>
+
+            <div class="row m-1">
+                <div class="col-4" *ngFor="let card of cardsInHand"
+                     (click)="checkAddCard(card)">
+                    <img src="{{card.graphic}}"
+                         class="img-fluid" alt="Responsive image"
+                         [ngStyle]="{'box-shadow':card.clickable &&
+                         gameStateLocal.isItMyTurn? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white'}"
+                    >
+                </div>
+            </div>
+
+            <div class="row m-1 border" *ngFor="let player of gameStateLocal.players"
+                 [ngStyle]="{'box-shadow':player.playerName === gameStateLocal.currentPlayerName? '0 0 0 0.2rem red' : '0 0 0 0.2rem white'}">
+                <div class="row m-1">
+                    <div class="col-12">
+                        Name {{player.playerName}}
+                        Points {{player.points}}
+                        Cards In Hand {{player.cardsInHand.length}}
+                    </div>
+                </div>
+                <div class="row m-1">
+                    <div class="col">
+                        Cards
+                    </div>
+                    <div class="col {{token}} border"
+                         *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX']">
+                        {{player.cardsOwnedShort[token]}}
+                    </div>
+                </div>
+                <div class="row m-1">
+                    <div class="col" *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
+                        <img src="assets/{{token}}.png" class="img-fluid" alt="Responsive image">
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col text-center"
+                         *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
+                        {{player.tokens[token]}}
+                    </div>
                 </div>
             </div>
         </div>

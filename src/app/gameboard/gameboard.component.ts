@@ -94,7 +94,7 @@ export class GameboardComponent implements OnInit {
                             .subscribe(dataInside => {
                                 console.log(dataInside.howMany);
                                 this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                    width: '250px',
+                                    // width: '250px',
                                     data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
                                 });
                             });
@@ -120,7 +120,7 @@ export class GameboardComponent implements OnInit {
                                     .subscribe(dataInside => {
                                         console.log(dataInside.howMany);
                                         this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            width: '250px',
+                                            // width: '250px',
                                             data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
                                         });
                                     });
@@ -145,7 +145,7 @@ export class GameboardComponent implements OnInit {
                                     .subscribe(dataInside => {
                                         console.log(dataInside.howMany);
                                         this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            width: '250px',
+                                            // width: '250px',
                                             data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
                                         });
                                     });
@@ -170,7 +170,7 @@ export class GameboardComponent implements OnInit {
                                     .subscribe(dataInside => {
                                         console.log(dataInside.howMany);
                                         this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            width: '250px',
+                                            // width: '250px',
                                             data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
                                         });
                                     });
@@ -198,7 +198,7 @@ export class GameboardComponent implements OnInit {
                                     .subscribe(dataInside => {
                                         console.log(dataInside.howMany);
                                         this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            width: '250px',
+                                            // width: '250px',
                                             data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
                                         });
                                     });
@@ -227,7 +227,7 @@ export class GameboardComponent implements OnInit {
                             .subscribe(dataInside => {
                                 console.log(dataInside.howMany);
                                 this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                    width: '250px',
+                                    // width: '250px',
                                     data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
                                 });
                             });
@@ -268,7 +268,7 @@ export class GameboardComponent implements OnInit {
                             .subscribe(dataInside => {
                                 console.log(dataInside.howMany);
                                 this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                    width: '250px',
+                                    // width: '250px',
                                     data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
                                 });
                             });

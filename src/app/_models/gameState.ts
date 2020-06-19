@@ -9,6 +9,7 @@ export class GameState {
     nobles: Noble[];
     isItMyTurn: boolean;
     isItReserveTime: boolean;
+    currentPlayerName: string;
     firstToken: string;
     secondToken: string;
     thirdToken: string;

@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Finished</h1>
+<div mat-dialog-content>
+    <p *ngFor="let player of data.players">
+        {{player.playerName}}
+        {{player.points}}
+    </p>
+</div>
+<div mat-dialog-actions>
+    <a
+            class="btn btn-primary" [mat-dialog-close]= true cdkFocusInitial
+            routerLink="../home" >Ok</a>
+</div>

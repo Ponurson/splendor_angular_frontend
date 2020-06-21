@@ -18,6 +18,7 @@ import { GameboardComponent } from './gameboard/gameboard.component';
 import { CardsComponent } from './cards/cards.component';
 import { ReturnCoinsDialogComponent } from './return-coins-dialog/return-coins-dialog.component';
 import { GameEndDialogComponent } from './game-end-dialog/game-end-dialog.component';
+
 @NgModule({
     imports: [
         BrowserModule,

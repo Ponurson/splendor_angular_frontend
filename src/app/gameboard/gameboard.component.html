@@ -1,30 +1,30 @@
-<div class="container-fluid">
+<div class="container-fluid container-sm">
     <div class="row">
         <div class="col-sm-8">
-            <div class="row m-1 ml-1 mr-1">
-                <div class="col-2 pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles">
-                    <img [src]="noble.graphic" class="img-fluid" alt="Responsive image">
-                </div>
-            </div>
             <div class="row m-1 ml-1 mr-1" *ngFor="let number1 of [0,1,2]">
-                <div class="col pl-1 pr-1" (click)="checkReserveCardFromDeck(3-number1)">
+                <div class="col pl-1 pr-1" (click)="isDisabled ?  null : checkReserveCardFromDeck(3-number1)">
                     <p class="card-text">
                         <img src="assets/back-{{3-number1}}.png"
-                             class="img-fluid crd" alt="Responsive image"
+                             class="img-fluid w-100" alt="Responsive image"
                              [ngStyle]="{'box-shadow':gameStateLocal.isItReserveTime? '0 0 0 0.2rem yellow' : '0 0 0 0.2rem white'}">
                     </p>
                 </div>
                 <div class="col pl-1 pr-1" *ngFor="let number2 of [0,1,2,3]"
-                     (click)="checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])">
+                     (click)="isDisabled ?  null : checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])">
                     <img src="{{gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].graphic}}"
-                         class="img-fluid crd" alt="Responsive image"
-                         [ngStyle]="{'box-shadow':gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable &&
+                         class="img-fluid w-100" alt="Responsive image"
+                         [ngStyle]="{'box-shadow':!isDisabled && gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable &&
                          gameStateLocal.isItMyTurn? (!gameStateLocal.isItReserveTime? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem yellow') : '0 0 0 0.2rem white'}"
                     >
                 </div>
             </div>
         </div>
         <div class="col-sm-4">
+            <div class="row m-1 ml-1 mr-1">
+                <div class="col-2 pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles">
+                    <img [src]="noble.graphic" class="img-fluid" alt="Responsive image">
+                </div>
+            </div>
             <div class="row m-1">
                 <div class="col text-center"
                      *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
@@ -44,19 +44,19 @@
                 </div>
                 <div class="col" (click)="checkAddGold('GOLD')">
                     <img src="assets/GOLD.png" class="img-fluid" alt="Responsive image"
-                         [ngStyle]="{'box-shadow':gameStateLocal.tokens['GOLD']> 0 &&
-                             gameStateLocal.isItMyTurn &&
+                         [ngStyle]="{'box-shadow':gameStateLocal.isItMyTurn &&
                               gameStateLocal.firstToken === undefined &&
-                              !gameStateLocal.isItReserveTime ? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white'}">
+                              !gameStateLocal.isItReserveTime &&
+                              cardsInHand.length < 3 ? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white'}">
                 </div>
             </div>
 
             <div class="row m-1">
                 <div class="col-4 mt-1 mb-1" *ngFor="let card of cardsInHand"
-                     (click)="checkAddCard(card)">
+                     (click)="isDisabled ?  null : checkAddCard(card)">
                     <img src="{{card.graphic}}"
                          class="img-fluid crd" alt="Responsive image"
-                         [ngStyle]="{'box-shadow':card.clickable &&
+                         [ngStyle]="{'box-shadow':!isDisabled && card.clickable &&
                          gameStateLocal.isItMyTurn? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white'}"
                     >
                 </div>

@@ -24,6 +24,7 @@ export class GameboardComponent implements OnInit {
     private dialogRef: MatDialogRef<ReturnCoinsDialogComponent, any>;
     private dialogRef2: MatDialogRef<GameEndDialogComponent, any>;
     private unsubscribe$ = new Subject<void>();
+    isDisabled: boolean;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
@@ -33,6 +34,7 @@ export class GameboardComponent implements OnInit {
                 private gameService: GameService,
                 private dialog: MatDialog) {
         this.user = this.accountService.userValue;
+        this.isDisabled = false;
     }
 
     ngOnInit(): void {
@@ -43,7 +45,7 @@ export class GameboardComponent implements OnInit {
             )
             .subscribe(data => {
                 console.log(data);
-                if (data.state === 'endGame'){
+                if (data.state === 'endGame') {
                     this.gameService.getFullState()
                         .subscribe(gameState => {
                             console.log(gameState);
@@ -57,7 +59,7 @@ export class GameboardComponent implements OnInit {
                                             width: '250px',
                                             data: {players: this.gameStateLocal.players}
                                         });
-                                }
+                                    }
                                 );
                         });
                 }
@@ -69,6 +71,9 @@ export class GameboardComponent implements OnInit {
                             const players = gameState.players;
                             const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
                             this.cardsInHand = currentPlayer.cardsInHand;
+                            if (this.gameStateLocal.isItMyTurn) {
+                                this.alertService.info('It is your turn', {autoClose: true});
+                            }
                         });
                 }
                 this.lastPlayer = data.state;
@@ -103,6 +108,9 @@ export class GameboardComponent implements OnInit {
                         .subscribe(gameState => {
                             console.log(gameState);
                             this.gameStateLocal = gameState;
+                            const players = gameState.players;
+                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
+                            this.cardsInHand = currentPlayer.cardsInHand;
                         });
                 });
             }
@@ -129,6 +137,10 @@ export class GameboardComponent implements OnInit {
                                 .subscribe(gameState => {
                                     console.log(gameState);
                                     this.gameStateLocal = gameState;
+                                    const players = gameState.players;
+                                    const currentPlayer = players.find(player =>
+                                        player.playerName === this.accountService.userValue.username);
+                                    this.cardsInHand = currentPlayer.cardsInHand;
                                 });
                         });
                     }
@@ -154,6 +166,10 @@ export class GameboardComponent implements OnInit {
                                 .subscribe(gameState => {
                                     console.log(gameState);
                                     this.gameStateLocal = gameState;
+                                    const players = gameState.players;
+                                    const currentPlayer = players.find(player =>
+                                        player.playerName === this.accountService.userValue.username);
+                                    this.cardsInHand = currentPlayer.cardsInHand;
                                 });
                         });
                 } else if (this.gameStateLocal.firstToken !== token &&
@@ -179,6 +195,10 @@ export class GameboardComponent implements OnInit {
                                 .subscribe(gameState => {
                                     console.log(gameState);
                                     this.gameStateLocal = gameState;
+                                    const players = gameState.players;
+                                    const currentPlayer = players.find(player =>
+                                        player.playerName === this.accountService.userValue.username);
+                                    this.cardsInHand = currentPlayer.cardsInHand;
                                 });
                         });
                     }
@@ -207,6 +227,10 @@ export class GameboardComponent implements OnInit {
                                 .subscribe(gameState => {
                                     console.log(gameState);
                                     this.gameStateLocal = gameState;
+                                    const players = gameState.players;
+                                    const currentPlayer = players.find(player =>
+                                        player.playerName === this.accountService.userValue.username);
+                                    this.cardsInHand = currentPlayer.cardsInHand;
                                 });
                         });
                 }
@@ -216,6 +240,7 @@ export class GameboardComponent implements OnInit {
 
     checkAddCard(i: Card) {
         if (i.clickable) {
+            this.isDisabled = true;
             this.gameService.getCardFromTable(i.id,
                 this.gameStateLocal.isItReserveTime)
                 .subscribe(data => {
@@ -241,23 +266,27 @@ export class GameboardComponent implements OnInit {
                             this.cardsInHand = currentPlayer.cardsInHand;
                         });
                 });
+            this.isDisabled = false;
         }
     }
 
     checkAddGold(gold: string) {
         if (this.gameStateLocal.isItMyTurn &&
-            this.gameStateLocal.tokens[gold] > 0 &&
-            this.gameStateLocal.firstToken === undefined) {
+            this.gameStateLocal.firstToken === undefined &&
+            !this.gameStateLocal.isItReserveTime &&
+            this.cardsInHand.length < 3) {
+            this.gameStateLocal.firstToken = gold;
             this.gameService.sendGoldToken()
                 .subscribe(gameState => {
                     console.log(gameState);
                     this.gameStateLocal = gameState;
+                    this.alertService.info('Reserve card from table', {autoClose: true});
                 });
         }
     }
 
     checkReserveCardFromDeck(number1: number) {
-        if (this.gameStateLocal.isItReserveTime){
+        if (this.gameStateLocal.isItReserveTime) {
             this.gameService.reserveCardFromDeck(number1)
                 .subscribe(data => {
                     console.log(data);

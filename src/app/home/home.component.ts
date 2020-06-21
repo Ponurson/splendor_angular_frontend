@@ -12,13 +12,14 @@ import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent} from '@app/dialog/dialog.component';
 
 @Component({templateUrl: 'home.component.html'})
-export class HomeComponent implements OnInit, OnDestroy{
+export class HomeComponent implements OnInit, OnDestroy {
     user: User;
     form: FormGroup;
     loading = false;
     submitted = false;
     status: string;
     private unsubscribe$ = new Subject<void>();
+    userList: string[];
 
     constructor(
         private formBuilder: FormBuilder,
@@ -39,6 +40,10 @@ export class HomeComponent implements OnInit, OnDestroy{
             player3: [''],
         });
 
+        this.accountService.getUserList().subscribe(data => {
+            this.userList = data;
+        });
+
         interval(2 * 1000)
             .pipe(
                 flatMap(() => this.accountService.getUserState()),
@@ -46,17 +51,18 @@ export class HomeComponent implements OnInit, OnDestroy{
             )
             .subscribe(data => {
                 console.log(data);
-                if (data.state === 'playing' && status !== 'playing') {
+                if (data.state === 'idle' && this.loading === true) {
+                    this.loading = false;
+                    this.alertService.info('no available players', {autoClose: true});
+                } else if (data.state === 'playing' && status !== 'playing') {
                     this.unsubscribe$.next();
                     this.unsubscribe$.complete();
                     this.router.navigate(['game']);
-                }
-                if (data.state === 'challenged' && status !== 'challenged') {
+                } else if (data.state === 'challenged' && status !== 'challenged') {
                     const dialogRef = this.dialog.open(DialogComponent, {
                         width: '250px',
                         data: {challenger: data.challenger}
                     });
-
                     dialogRef.afterClosed().subscribe(result => {
                         if (result === false) {
                             this.accountService.resignFromGame(data).pipe(first())
@@ -83,8 +89,6 @@ export class HomeComponent implements OnInit, OnDestroy{
                 }
                 status = data.state;
             });
-        // get return url from route parameters or default to '/'
-        // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
 
     get f() {
@@ -108,14 +112,13 @@ export class HomeComponent implements OnInit, OnDestroy{
             .subscribe(
                 data => {
                     console.log(data);
-
-                    // this.router.navigate([this.returnUrl]);
                 },
                 error => {
                     this.alertService.error(error);
                     this.loading = false;
                 });
     }
+
     ngOnDestroy() {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();

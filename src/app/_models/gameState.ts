@@ -13,4 +13,5 @@ export class GameState {
     firstToken: string;
     secondToken: string;
     thirdToken: string;
+    cardHolderPlace: Card;
 }

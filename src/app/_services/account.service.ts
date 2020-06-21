@@ -58,6 +58,9 @@ export class AccountService {
                 return user;
             }));
     }
+    logoutEarly(){
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/logout`, (''));
+    }
 
     logout() {
         // remove user from local storage and set current user to null
@@ -126,5 +129,9 @@ export class AccountService {
 
     joinGame(data) {
         return this.http.post(`${environment.apiUrl}/joinGame`, data);
+    }
+
+    getUserList() {
+        return this.http.get<string[]>(`${environment.apiUrl}/userList`);
     }
 }

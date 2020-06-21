@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Hi </h1>
 <div mat-dialog-content>
     <p>You need to return {{data.howMany}} tokens</p>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row m-1">
             <div class="col text-center" *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX','GOLD']">
                 {{data.tokenState[token]}}

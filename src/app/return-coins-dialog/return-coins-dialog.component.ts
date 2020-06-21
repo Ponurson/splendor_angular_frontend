@@ -15,10 +15,7 @@ export class ReturnCoinsDialogComponent {
               @Inject(MAT_DIALOG_DATA) public data: any,
               private gameService: GameService) {
     this.tokensToGiveBack = [];
-  }
-
-  onNoClick(): void {
-    this.dialogRef.close();
+    dialogRef.disableClose = true;
   }
 
   checkRemoveCoin(token: string, i: number, howMany: number) {

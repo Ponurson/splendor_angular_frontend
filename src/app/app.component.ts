@@ -1,9 +1,9 @@
-﻿import { Component } from '@angular/core';
+﻿import {Component} from '@angular/core';
 
-import { AccountService } from './_services';
-import { User } from './_models';
+import {AccountService} from './_services';
+import {User} from './_models';
 
-@Component({ selector: 'app', templateUrl: 'app.component.html' })
+@Component({selector: 'app', templateUrl: 'app.component.html'})
 export class AppComponent {
     user: User;
 
@@ -12,6 +12,10 @@ export class AppComponent {
     }
 
     logout() {
+        // this.accountService.logoutEarly()
+        //     .subscribe(data => {
+        //         console.log(data);
+        //     });
         this.accountService.logout();
     }
 }

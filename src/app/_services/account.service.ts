@@ -59,7 +59,7 @@ export class AccountService {
             }));
     }
     logoutEarly(){
-        return this.http.post<Record<string, string>>(`${environment.apiUrl}/logout`, (''));
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/veryStrangeLogout`, (''));
     }
 
     logout() {

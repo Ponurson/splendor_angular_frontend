@@ -12,10 +12,10 @@ export class AppComponent {
     }
 
     logout() {
-        // this.accountService.logoutEarly()
-        //     .subscribe(data => {
-        //         console.log(data);
-        //     });
+        this.accountService.logoutEarly()
+            .subscribe(data => {
+                console.log(data);
+            });
         this.accountService.logout();
     }
 }

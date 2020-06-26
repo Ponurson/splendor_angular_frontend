@@ -71,9 +71,9 @@ export class GameboardComponent implements OnInit {
                             const players = gameState.players;
                             const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
                             this.cardsInHand = currentPlayer.cardsInHand;
-                            if (this.gameStateLocal.isItMyTurn) {
-                                this.alertService.info('It is your turn', {autoClose: true});
-                            }
+                            // if (this.gameStateLocal.isItMyTurn) {
+                            //     this.alertService.info('It is your turn', {autoClose: true});
+                            // }
                         });
                 }
                 this.lastPlayer = data.state;

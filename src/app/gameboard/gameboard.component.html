@@ -1,13 +1,11 @@
-<div class="container-fluid container-sm">
+<div class="container-fluid container-sm" *ngIf="gameStateLocal != undefined">
     <div class="row">
         <div class="col-sm-8">
             <div class="row m-1 ml-1 mr-1" *ngFor="let number1 of [0,1,2]">
                 <div class="col pl-1 pr-1" (click)="isDisabled ?  null : checkReserveCardFromDeck(3-number1)">
-                    <p class="card-text">
-                        <img src="assets/back-{{3-number1}}.png"
-                             class="img-fluid w-100" alt="Responsive image"
-                             [ngStyle]="{'box-shadow':gameStateLocal.isItReserveTime? '0 0 0 0.2rem yellow' : '0 0 0 0.2rem white'}">
-                    </p>
+                    <img src="assets/back-{{3-number1}}.png"
+                         class="img-fluid w-100" alt="Responsive image"
+                         [ngStyle]="{'box-shadow':gameStateLocal.isItReserveTime? '0 0 0 0.2rem yellow' : '0 0 0 0.2rem white'}">
                 </div>
                 <div class="col pl-1 pr-1" *ngFor="let number2 of [0,1,2,3]"
                      (click)="isDisabled ?  null : checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])">
@@ -21,7 +19,7 @@
         </div>
         <div class="col-sm-4">
             <div class="row m-1 ml-1 mr-1">
-                <div class="col-2 pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles">
+                <div class="col-2 col-sm pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles">
                     <img [src]="noble.graphic" class="img-fluid" alt="Responsive image">
                 </div>
             </div>

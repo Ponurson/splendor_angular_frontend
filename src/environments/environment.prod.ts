@@ -1,4 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://9aee67f01c07.ngrok.io'
+    // apiUrl: 'https://3997460a90cc.ngrok.io'
+    apiUrl: 'https://splendor-spring-backend.herokuapp.com'
 };

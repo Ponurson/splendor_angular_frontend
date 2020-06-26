@@ -9,6 +9,7 @@ export class Card {
     // onyxCost: number;
     graphic: string;
     clickable: boolean;
+    taken: boolean;
     produces: string;
     cost: Record<string, number>;
 }

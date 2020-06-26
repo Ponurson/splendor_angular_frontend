@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {first, flatMap, takeUntil} from 'rxjs/operators';
 import {Card, GameState, User} from '@app/_models';
 
@@ -9,13 +9,15 @@ import {ReturnCoinsDialogComponent} from '@app/return-coins-dialog/return-coins-
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {GameEndDialogComponent} from '@app/game-end-dialog/game-end-dialog.component';
+import {Animations} from '@app/animations/animations';
 
 @Component({
     selector: 'app-gameboard',
     templateUrl: './gameboard.component.html',
-    styleUrls: ['./gameboard.component.less']
+    styleUrls: ['./gameboard.component.less'],
+    animations: Animations
 })
-export class GameboardComponent implements OnInit {
+export class GameboardComponent implements OnInit, AfterViewInit {
     user: User;
     lastPlayer: string;
     gameStateLocal: GameState;
@@ -25,6 +27,12 @@ export class GameboardComponent implements OnInit {
     private dialogRef2: MatDialogRef<GameEndDialogComponent, any>;
     private unsubscribe$ = new Subject<void>();
     isDisabled: boolean;
+    positionX: number;
+    positionY: number;
+    translateList: number[][][];
+
+    @ViewChildren('cardsDiv') cardsDiv: QueryList<ElementRef>;
+    @ViewChildren('playersDiv') playersDiv: QueryList<ElementRef>;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
@@ -35,6 +43,7 @@ export class GameboardComponent implements OnInit {
                 private dialog: MatDialog) {
         this.user = this.accountService.userValue;
         this.isDisabled = false;
+        this.translateList = new Array<Array<Array<number>>>();
     }
 
     ngOnInit(): void {
@@ -71,9 +80,9 @@ export class GameboardComponent implements OnInit {
                             const players = gameState.players;
                             const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
                             this.cardsInHand = currentPlayer.cardsInHand;
-                            if (this.gameStateLocal.isItMyTurn) {
-                                this.alertService.info('It is your turn', {autoClose: true});
-                            }
+                            // if (this.gameStateLocal.isItMyTurn) {
+                            //     this.alertService.info('It is your turn', {autoClose: true});
+                            // }
                         });
                 }
                 this.lastPlayer = data.state;
@@ -312,5 +321,32 @@ export class GameboardComponent implements OnInit {
                         });
                 });
         }
+    }
+
+    ngAfterViewInit(): void {
+        this.playersDiv.forEach((divLarge: ElementRef) => {
+            const {x, y} = divLarge.nativeElement.getBoundingClientRect();
+            this.positionY = y;
+            this.positionX = x;
+            const tempArray = new Array<Array<number>>();
+            this.cardsDiv.forEach((div: ElementRef) => {
+                const {x, y} = div.nativeElement.getBoundingClientRect();
+                tempArray.push([this.positionX - x,this.positionY - y]);
+            });
+            this.translateList.push(tempArray);
+            console.log(this.translateList);
+        });
+    }
+
+    giveTranslateX(cardNum: number) {
+        const currentPlayerName = this.gameStateLocal.currentPlayerName;
+        const playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
+        return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][0] : 0;
+    }
+
+    giveTranslateY(cardNum: number) {
+        const currentPlayerName = this.gameStateLocal.currentPlayerName;
+        const playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
+        return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][1] : 0;
     }
 }

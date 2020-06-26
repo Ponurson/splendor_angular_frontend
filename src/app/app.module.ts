@@ -13,11 +13,10 @@ import { AlertComponent } from './_components';
 import { HomeComponent } from './home';
 import {MatDialogModule} from '@angular/material/dialog';
 import { DialogComponent } from './dialog/dialog.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameboardComponent } from './gameboard/gameboard.component';
-import { CardsComponent } from './cards/cards.component';
 import { ReturnCoinsDialogComponent } from './return-coins-dialog/return-coins-dialog.component';
 import { GameEndDialogComponent } from './game-end-dialog/game-end-dialog.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
     imports: [
@@ -34,7 +33,6 @@ import { GameEndDialogComponent } from './game-end-dialog/game-end-dialog.compon
         HomeComponent,
         DialogComponent ,
         GameboardComponent ,
-        CardsComponent ,
         ReturnCoinsDialogComponent ,
         GameEndDialogComponent],
     providers: [

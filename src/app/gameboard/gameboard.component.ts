@@ -30,6 +30,7 @@ export class GameboardComponent implements OnInit, AfterViewInit {
     positionX: number;
     positionY: number;
     translateList: number[][][];
+    hasCardBeenTaken: boolean[];
 
     @ViewChildren('cardsDiv') cardsDiv: QueryList<ElementRef>;
     @ViewChildren('playersDiv') playersDiv: QueryList<ElementRef>;
@@ -44,6 +45,7 @@ export class GameboardComponent implements OnInit, AfterViewInit {
         this.user = this.accountService.userValue;
         this.isDisabled = false;
         this.translateList = new Array<Array<Array<number>>>();
+        this.hasCardBeenTaken = new Array<boolean>(12).fill(false);
     }
 
     ngOnInit(): void {
@@ -58,6 +60,7 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                     this.gameService.getFullState()
                         .subscribe(gameState => {
                             console.log(gameState);
+
                             this.gameStateLocal = gameState;
                             this.gameService.setHasSeenResults()
                                 .subscribe(data2 => {
@@ -76,6 +79,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                     this.gameService.getFullState()
                         .subscribe(gameState => {
                             console.log(gameState);
+
+                            if (this.gameStateLocal !== undefined) {
+                                for (let i = 0; i < this.gameStateLocal.cardsOnTable.length; i++) {
+                                    this.hasCardBeenTaken[i] = false;
+                                    if (this.gameStateLocal.cardsOnTable[i].graphic !==
+                                        gameState.cardsOnTable[i].graphic) {
+                                        this.hasCardBeenTaken[i] = true;
+                                    }
+                                }
+                            }
+
                             this.gameStateLocal = gameState;
                             const players = gameState.players;
                             const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
@@ -116,6 +130,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                     this.gameService.getFullState()
                         .subscribe(gameState => {
                             console.log(gameState);
+
+                            if (this.gameStateLocal !== undefined) {
+                                for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                                    this.hasCardBeenTaken[i2] = false;
+                                    if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                        gameState.cardsOnTable[i2].graphic) {
+                                        this.hasCardBeenTaken[i2] = true;
+                                    }
+                                }
+                            }
+
                             this.gameStateLocal = gameState;
                             const players = gameState.players;
                             const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
@@ -145,6 +170,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                             this.gameService.getFullState()
                                 .subscribe(gameState => {
                                     console.log(gameState);
+
+                                    if (this.gameStateLocal !== undefined) {
+                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                                            this.hasCardBeenTaken[i2] = false;
+                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                                gameState.cardsOnTable[i2].graphic) {
+                                                this.hasCardBeenTaken[i2] = true;
+                                            }
+                                        }
+                                    }
+
                                     this.gameStateLocal = gameState;
                                     const players = gameState.players;
                                     const currentPlayer = players.find(player =>
@@ -174,6 +210,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                             this.gameService.getFullState()
                                 .subscribe(gameState => {
                                     console.log(gameState);
+
+                                    if (this.gameStateLocal !== undefined) {
+                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                                            this.hasCardBeenTaken[i2] = false;
+                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                                gameState.cardsOnTable[i2].graphic) {
+                                                this.hasCardBeenTaken[i2] = true;
+                                            }
+                                        }
+                                    }
+
                                     this.gameStateLocal = gameState;
                                     const players = gameState.players;
                                     const currentPlayer = players.find(player =>
@@ -203,6 +250,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                             this.gameService.getFullState()
                                 .subscribe(gameState => {
                                     console.log(gameState);
+
+                                    if (this.gameStateLocal !== undefined) {
+                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                                            this.hasCardBeenTaken[i2] = false;
+                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                                gameState.cardsOnTable[i2].graphic) {
+                                                this.hasCardBeenTaken[i2] = true;
+                                            }
+                                        }
+                                    }
+
                                     this.gameStateLocal = gameState;
                                     const players = gameState.players;
                                     const currentPlayer = players.find(player =>
@@ -235,6 +293,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                             this.gameService.getFullState()
                                 .subscribe(gameState => {
                                     console.log(gameState);
+
+                                    if (this.gameStateLocal !== undefined) {
+                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                                            this.hasCardBeenTaken[i2] = false;
+                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                                gameState.cardsOnTable[i2].graphic) {
+                                                this.hasCardBeenTaken[i2] = true;
+                                            }
+                                        }
+                                    }
+
                                     this.gameStateLocal = gameState;
                                     const players = gameState.players;
                                     const currentPlayer = players.find(player =>
@@ -269,6 +338,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                     this.gameService.getFullState()
                         .subscribe(gameState => {
                             console.log(gameState);
+
+                            if (this.gameStateLocal !== undefined) {
+                                for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                                    this.hasCardBeenTaken[i2] = false;
+                                    if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                        gameState.cardsOnTable[i2].graphic) {
+                                        this.hasCardBeenTaken[i2] = true;
+                                    }
+                                }
+                            }
+
                             this.gameStateLocal = gameState;
                             const players = gameState.players;
                             const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
@@ -288,6 +368,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
             this.gameService.sendGoldToken()
                 .subscribe(gameState => {
                     console.log(gameState);
+
+                    if (this.gameStateLocal !== undefined) {
+                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                            this.hasCardBeenTaken[i2] = false;
+                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                gameState.cardsOnTable[i2].graphic) {
+                                this.hasCardBeenTaken[i2] = true;
+                            }
+                        }
+                    }
+
                     this.gameStateLocal = gameState;
                     this.alertService.info('Reserve card from table', {autoClose: true});
                 });
@@ -314,6 +405,17 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                     this.gameService.getFullState()
                         .subscribe(gameState => {
                             console.log(gameState);
+
+                            if (this.gameStateLocal !== undefined) {
+                                for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
+                                    this.hasCardBeenTaken[i2] = false;
+                                    if (this.gameStateLocal.cardsOnTable[i2].graphic !==
+                                        gameState.cardsOnTable[i2].graphic) {
+                                        this.hasCardBeenTaken[i2] = true;
+                                    }
+                                }
+                            }
+
                             this.gameStateLocal = gameState;
                             const players = gameState.players;
                             const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
@@ -331,7 +433,7 @@ export class GameboardComponent implements OnInit, AfterViewInit {
             const tempArray = new Array<Array<number>>();
             this.cardsDiv.forEach((div: ElementRef) => {
                 const {x, y} = div.nativeElement.getBoundingClientRect();
-                tempArray.push([this.positionX - x,this.positionY - y]);
+                tempArray.push([this.positionX - x, this.positionY - y]);
             });
             this.translateList.push(tempArray);
             console.log(this.translateList);
@@ -340,13 +442,23 @@ export class GameboardComponent implements OnInit, AfterViewInit {
 
     giveTranslateX(cardNum: number) {
         const currentPlayerName = this.gameStateLocal.currentPlayerName;
-        const playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
+        let playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
+        if (playerNum - 1 < 0){
+            playerNum = this.gameStateLocal.players.length - 1;
+        }else {
+            playerNum -= 1;
+        }
         return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][0] : 0;
     }
 
     giveTranslateY(cardNum: number) {
         const currentPlayerName = this.gameStateLocal.currentPlayerName;
-        const playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
+        let playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
+        if (playerNum - 1 < 0){
+            playerNum = this.gameStateLocal.players.length - 1;
+        }else {
+            playerNum -= 1;
+        }
         return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][1] : 0;
     }
 }

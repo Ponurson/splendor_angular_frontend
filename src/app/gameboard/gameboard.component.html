@@ -10,7 +10,7 @@
                 </div>
                 <div #cardsDiv class="col pl-1 pr-1" *ngFor="let number2 of [0,1,2,3]"
                      (click)="isDisabled ?  null : checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])"
-                     [@pageAnimations]="{value: (gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable ? 'open' : 'close'),
+                     [@pageAnimations]="{value: (!hasCardBeenTaken[11- (number1 * 4 + number2)] ? 'open' : 'close'),
                      params: { posX: giveTranslateX((number1 * 4 + number2)),
                      posY: giveTranslateY((number1 * 4 + number2))}}">
                     <img src="{{gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].graphic}}"

@@ -3,7 +3,7 @@ import {first, flatMap, takeUntil} from 'rxjs/operators';
 import {Card, GameState, User} from '@app/_models';
 
 import {AccountService, AlertService, GameService} from '@app/_services';
-import {config, interval, Observable, Subject} from 'rxjs';
+import {interval, Subject} from 'rxjs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ReturnCoinsDialogComponent} from '@app/return-coins-dialog/return-coins-dialog.component';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -23,8 +23,8 @@ export class GameboardComponent implements OnInit, AfterViewInit {
     gameStateLocal: GameState;
     cardsInHand: Card[];
     private zeroTokens: number;
-    private dialogRef: MatDialogRef<ReturnCoinsDialogComponent, any>;
-    private dialogRef2: MatDialogRef<GameEndDialogComponent, any>;
+    private dialogRef: MatDialogRef<ReturnCoinsDialogComponent>;
+    private dialogRef2: MatDialogRef<GameEndDialogComponent>;
     private unsubscribe$ = new Subject<void>();
     isDisabled: boolean;
     positionX: number;
@@ -60,7 +60,6 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                     this.gameService.getFullState()
                         .subscribe(gameState => {
                             console.log(gameState);
-
                             this.gameStateLocal = gameState;
                             this.gameService.setHasSeenResults()
                                 .subscribe(data2 => {
@@ -76,30 +75,44 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                         });
                 }
                 if (data.state !== this.lastPlayer) {
-                    this.gameService.getFullState()
-                        .subscribe(gameState => {
-                            console.log(gameState);
-
-                            if (this.gameStateLocal !== undefined) {
-                                for (let i = 0; i < this.gameStateLocal.cardsOnTable.length; i++) {
-                                    this.hasCardBeenTaken[i] = false;
-                                    if (this.gameStateLocal.cardsOnTable[i].graphic !==
-                                        gameState.cardsOnTable[i].graphic) {
-                                        this.hasCardBeenTaken[i] = true;
-                                    }
-                                }
-                            }
-
-                            this.gameStateLocal = gameState;
-                            const players = gameState.players;
-                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
-                            this.cardsInHand = currentPlayer.cardsInHand;
-                            // if (this.gameStateLocal.isItMyTurn) {
-                            //     this.alertService.info('It is your turn', {autoClose: true});
-                            // }
-                        });
+                   this.fullState();
                 }
                 this.lastPlayer = data.state;
+            });
+    }
+
+    fullState() {
+        return  this.gameService.getFullState()
+            .subscribe(gameState => {
+                console.log(gameState);
+
+                if (this.gameStateLocal !== undefined) {
+                    for (let i = 0; i < this.gameStateLocal.cardsOnTable.length; i++) {
+                        this.hasCardBeenTaken[i] = false;
+                        if (this.gameStateLocal.cardsOnTable[i].graphic !==
+                            gameState.cardsOnTable[i].graphic) {
+                            this.hasCardBeenTaken[i] = true;
+                        }
+                    }
+                }
+
+                this.gameStateLocal = gameState;
+                const players = gameState.players;
+                const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
+                this.cardsInHand = currentPlayer.cardsInHand;
+            });
+    }
+
+    returnTokens(){
+        console.log('give back tokens');
+        return this.gameService.processTokenReturn()
+            .pipe(first())
+            .subscribe(dataInside => {
+                console.log(dataInside.howMany);
+                this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
+                    // width: '250px',
+                    data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
+                });
             });
     }
 
@@ -116,36 +129,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                     this.gameStateLocal.secondToken).subscribe(data => {
                     console.log(data);
                     if (data.message === 'Give back tokens') {
-                        console.log('give back tokens');
-                        this.gameService.processTokenReturn()
-                            .pipe(first())
-                            .subscribe(dataInside => {
-                                console.log(dataInside.howMany);
-                                this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                    // width: '250px',
-                                    data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                });
-                            });
+                        this.returnTokens();
                     }
-                    this.gameService.getFullState()
-                        .subscribe(gameState => {
-                            console.log(gameState);
-
-                            if (this.gameStateLocal !== undefined) {
-                                for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
-                                    this.hasCardBeenTaken[i2] = false;
-                                    if (this.gameStateLocal.cardsOnTable[i2].graphic !==
-                                        gameState.cardsOnTable[i2].graphic) {
-                                        this.hasCardBeenTaken[i2] = true;
-                                    }
-                                }
-                            }
-
-                            this.gameStateLocal = gameState;
-                            const players = gameState.players;
-                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
-                            this.cardsInHand = currentPlayer.cardsInHand;
-                        });
+                    this.fullState();
                 });
             }
             if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[token] > 0) {
@@ -156,37 +142,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                             this.gameStateLocal.secondToken).subscribe(data => {
                             console.log(data);
                             if (data.message === 'Give back tokens') {
-                                console.log('give back tokens');
-                                this.gameService.processTokenReturn()
-                                    .pipe(first())
-                                    .subscribe(dataInside => {
-                                        console.log(dataInside.howMany);
-                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            // width: '250px',
-                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                        });
-                                    });
+                                this.returnTokens();
                             }
-                            this.gameService.getFullState()
-                                .subscribe(gameState => {
-                                    console.log(gameState);
-
-                                    if (this.gameStateLocal !== undefined) {
-                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
-                                            this.hasCardBeenTaken[i2] = false;
-                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
-                                                gameState.cardsOnTable[i2].graphic) {
-                                                this.hasCardBeenTaken[i2] = true;
-                                            }
-                                        }
-                                    }
-
-                                    this.gameStateLocal = gameState;
-                                    const players = gameState.players;
-                                    const currentPlayer = players.find(player =>
-                                        player.playerName === this.accountService.userValue.username);
-                                    this.cardsInHand = currentPlayer.cardsInHand;
-                                });
+                            this.fullState();
                         });
                     }
                 } else if (this.gameStateLocal.firstToken === token &&
@@ -196,37 +154,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                         .subscribe(data => {
                             console.log(data);
                             if (data.message === 'Give back tokens') {
-                                console.log('give back tokens');
-                                this.gameService.processTokenReturn()
-                                    .pipe(first())
-                                    .subscribe(dataInside => {
-                                        console.log(dataInside.howMany);
-                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            // width: '250px',
-                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                        });
-                                    });
+                                this.returnTokens();
                             }
-                            this.gameService.getFullState()
-                                .subscribe(gameState => {
-                                    console.log(gameState);
-
-                                    if (this.gameStateLocal !== undefined) {
-                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
-                                            this.hasCardBeenTaken[i2] = false;
-                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
-                                                gameState.cardsOnTable[i2].graphic) {
-                                                this.hasCardBeenTaken[i2] = true;
-                                            }
-                                        }
-                                    }
-
-                                    this.gameStateLocal = gameState;
-                                    const players = gameState.players;
-                                    const currentPlayer = players.find(player =>
-                                        player.playerName === this.accountService.userValue.username);
-                                    this.cardsInHand = currentPlayer.cardsInHand;
-                                });
+                            this.fullState();
                         });
                 } else if (this.gameStateLocal.firstToken !== token &&
                     this.gameStateLocal.secondToken === undefined) {
@@ -236,37 +166,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                             this.gameStateLocal.secondToken).subscribe(data => {
                             console.log(data);
                             if (data.message === 'Give back tokens') {
-                                console.log('give back tokens');
-                                this.gameService.processTokenReturn()
-                                    .pipe(first())
-                                    .subscribe(dataInside => {
-                                        console.log(dataInside.howMany);
-                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            // width: '250px',
-                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                        });
-                                    });
+                                this.returnTokens();
                             }
-                            this.gameService.getFullState()
-                                .subscribe(gameState => {
-                                    console.log(gameState);
-
-                                    if (this.gameStateLocal !== undefined) {
-                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
-                                            this.hasCardBeenTaken[i2] = false;
-                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
-                                                gameState.cardsOnTable[i2].graphic) {
-                                                this.hasCardBeenTaken[i2] = true;
-                                            }
-                                        }
-                                    }
-
-                                    this.gameStateLocal = gameState;
-                                    const players = gameState.players;
-                                    const currentPlayer = players.find(player =>
-                                        player.playerName === this.accountService.userValue.username);
-                                    this.cardsInHand = currentPlayer.cardsInHand;
-                                });
+                            this.fullState();
                         });
                     }
                 } else if (this.gameStateLocal.firstToken !== token &&
@@ -279,37 +181,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                         .subscribe(data => {
                             console.log(data);
                             if (data.message === 'Give back tokens') {
-                                console.log('give back tokens');
-                                this.gameService.processTokenReturn()
-                                    .pipe(first())
-                                    .subscribe(dataInside => {
-                                        console.log(dataInside.howMany);
-                                        this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                            // width: '250px',
-                                            data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                        });
-                                    });
+                                this.returnTokens();
                             }
-                            this.gameService.getFullState()
-                                .subscribe(gameState => {
-                                    console.log(gameState);
-
-                                    if (this.gameStateLocal !== undefined) {
-                                        for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
-                                            this.hasCardBeenTaken[i2] = false;
-                                            if (this.gameStateLocal.cardsOnTable[i2].graphic !==
-                                                gameState.cardsOnTable[i2].graphic) {
-                                                this.hasCardBeenTaken[i2] = true;
-                                            }
-                                        }
-                                    }
-
-                                    this.gameStateLocal = gameState;
-                                    const players = gameState.players;
-                                    const currentPlayer = players.find(player =>
-                                        player.playerName === this.accountService.userValue.username);
-                                    this.cardsInHand = currentPlayer.cardsInHand;
-                                });
+                            this.fullState();
                         });
                 }
             }
@@ -324,36 +198,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                 .subscribe(data => {
                     console.log(data);
                     if (data.message === 'Give back tokens') {
-                        console.log('give back tokens');
-                        this.gameService.processTokenReturn()
-                            .pipe(first())
-                            .subscribe(dataInside => {
-                                console.log(dataInside.howMany);
-                                this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                    // width: '250px',
-                                    data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                });
-                            });
+                        this.returnTokens();
                     }
-                    this.gameService.getFullState()
-                        .subscribe(gameState => {
-                            console.log(gameState);
-
-                            if (this.gameStateLocal !== undefined) {
-                                for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
-                                    this.hasCardBeenTaken[i2] = false;
-                                    if (this.gameStateLocal.cardsOnTable[i2].graphic !==
-                                        gameState.cardsOnTable[i2].graphic) {
-                                        this.hasCardBeenTaken[i2] = true;
-                                    }
-                                }
-                            }
-
-                            this.gameStateLocal = gameState;
-                            const players = gameState.players;
-                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
-                            this.cardsInHand = currentPlayer.cardsInHand;
-                        });
+                    this.fullState();
                 });
             this.isDisabled = false;
         }
@@ -391,36 +238,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                 .subscribe(data => {
                     console.log(data);
                     if (data.message === 'Give back tokens') {
-                        console.log('give back tokens');
-                        this.gameService.processTokenReturn()
-                            .pipe(first())
-                            .subscribe(dataInside => {
-                                console.log(dataInside.howMany);
-                                this.dialogRef = this.dialog.open(ReturnCoinsDialogComponent, {
-                                    // width: '250px',
-                                    data: {howMany: dataInside.howMany, tokenState: dataInside.tokenState}
-                                });
-                            });
+                        this.returnTokens();
                     }
-                    this.gameService.getFullState()
-                        .subscribe(gameState => {
-                            console.log(gameState);
-
-                            if (this.gameStateLocal !== undefined) {
-                                for (let i2 = 0; i2 < this.gameStateLocal.cardsOnTable.length; i2++) {
-                                    this.hasCardBeenTaken[i2] = false;
-                                    if (this.gameStateLocal.cardsOnTable[i2].graphic !==
-                                        gameState.cardsOnTable[i2].graphic) {
-                                        this.hasCardBeenTaken[i2] = true;
-                                    }
-                                }
-                            }
-
-                            this.gameStateLocal = gameState;
-                            const players = gameState.players;
-                            const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
-                            this.cardsInHand = currentPlayer.cardsInHand;
-                        });
+                    this.fullState();
                 });
         }
     }

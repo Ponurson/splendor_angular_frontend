@@ -34,15 +34,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.accountService.getUserList().subscribe(data => {
+            this.userList = data;
+        });
+
         this.form = this.formBuilder.group({
             player1: ['', Validators.required],
             player2: [''],
             player3: [''],
         });
 
-        this.accountService.getUserList().subscribe(data => {
-            this.userList = data;
-        });
 
         interval(2 * 1000)
             .pipe(
@@ -52,6 +53,9 @@ export class HomeComponent implements OnInit, OnDestroy {
             .subscribe(data => {
                 console.log(data);
                 if (data.state === 'idle' && this.loading === true) {
+                    // racing conditions i to tutaj będzie bardzo źle
+                    // trzeba to jakoś inaczej zrobić bo przecież nawet jeżeli na backendzie jest
+                   // jest wszystko wporzo to tutaj sobie można zrobić krzywdę
                     this.loading = false;
                     this.alertService.info('no available players', {autoClose: true});
                 } else if (data.state === 'playing' && status !== 'playing') {

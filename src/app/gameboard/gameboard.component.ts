@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {first, flatMap, takeUntil} from 'rxjs/operators';
 import {Card, GameState, User} from '@app/_models';
 
@@ -17,7 +17,7 @@ import {Animations} from '@app/animations/animations';
     styleUrls: ['./gameboard.component.less'],
     animations: Animations
 })
-export class GameboardComponent implements OnInit, AfterViewInit {
+export class GameboardComponent implements OnInit, AfterViewInit, AfterContentInit{
     user: User;
     lastPlayer: string;
     gameStateLocal: GameState;
@@ -75,18 +75,19 @@ export class GameboardComponent implements OnInit, AfterViewInit {
                         });
                 }
                 if (data.state !== this.lastPlayer) {
-                   this.fullState();
+                    this.fullState();
                 }
                 this.lastPlayer = data.state;
             });
     }
 
     fullState() {
-        return  this.gameService.getFullState()
+        return this.gameService.getFullState()
             .subscribe(gameState => {
                 console.log(gameState);
 
                 if (this.gameStateLocal !== undefined) {
+                    this.getAnimationParams();
                     for (let i = 0; i < this.gameStateLocal.cardsOnTable.length; i++) {
                         this.hasCardBeenTaken[i] = false;
                         if (this.gameStateLocal.cardsOnTable[i].graphic !==
@@ -103,7 +104,7 @@ export class GameboardComponent implements OnInit, AfterViewInit {
             });
     }
 
-    returnTokens(){
+    returnTokens() {
         console.log('give back tokens');
         return this.gameService.processTokenReturn()
             .pipe(first())
@@ -245,7 +246,8 @@ export class GameboardComponent implements OnInit, AfterViewInit {
         }
     }
 
-    ngAfterViewInit(): void {
+
+    getAnimationParams() {
         this.playersDiv.forEach((divLarge: ElementRef) => {
             const {x, y} = divLarge.nativeElement.getBoundingClientRect();
             this.positionY = y;
@@ -260,12 +262,19 @@ export class GameboardComponent implements OnInit, AfterViewInit {
         });
     }
 
+    ngAfterViewInit(): void {
+        this.getAnimationParams();
+    }
+    ngAfterContentInit(): void {
+        this.getAnimationParams();
+    }
+
     giveTranslateX(cardNum: number) {
         const currentPlayerName = this.gameStateLocal.currentPlayerName;
         let playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
-        if (playerNum - 1 < 0){
+        if (playerNum - 1 < 0) {
             playerNum = this.gameStateLocal.players.length - 1;
-        }else {
+        } else {
             playerNum -= 1;
         }
         return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][0] : 0;
@@ -274,9 +283,9 @@ export class GameboardComponent implements OnInit, AfterViewInit {
     giveTranslateY(cardNum: number) {
         const currentPlayerName = this.gameStateLocal.currentPlayerName;
         let playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
-        if (playerNum - 1 < 0){
+        if (playerNum - 1 < 0) {
             playerNum = this.gameStateLocal.players.length - 1;
-        }else {
+        } else {
             playerNum -= 1;
         }
         return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][1] : 0;

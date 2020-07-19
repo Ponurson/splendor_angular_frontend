@@ -13,10 +13,11 @@ export class DialogComponent {
     constructor(
         public dialogRef: MatDialogRef<HomeComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any) {
+        dialogRef.disableClose = true;
     }
 
-    onNoClick(): void {
-        this.dialogRef.close();
-    }
+    // onNoClick(): void {
+    //     this.dialogRef.close();
+    // }
 
 }

@@ -5,7 +5,8 @@
             <div class="form-group">
                 <label for="player1">Player1</label>
                 <select class="custom-select" formControlName="player1"
-                        [ngClass]="{ 'is-invalid': submitted && f.player1.errors }">
+                        [ngClass]="{ 'is-invalid': submitted && f.player1.errors }" >
+                    <option value="" disabled selected>Select player</option>
                     <option *ngFor="let user of userList" [ngValue]="user">{{user}}</option>
                 </select>
                 <div *ngIf="submitted && f.player1.errors" class="invalid-feedback">
@@ -16,6 +17,7 @@
                 <label for="player2">Player2</label>
                 <select class="custom-select" formControlName="player2"
                         [ngClass]="{ 'is-invalid': submitted && f.player2.errors }">
+                    <option value="" disabled selected>Select player</option>
                     <option *ngFor="let user of userList" [ngValue]="user">{{user}}</option>
                 </select>
                 <div *ngIf="submitted && f.player2.errors" class="invalid-feedback">
@@ -26,6 +28,7 @@
                 <label for="player3">Player3</label>
                 <select class="custom-select" formControlName="player3"
                         [ngClass]="{ 'is-invalid': submitted && f.player3.errors }">
+                    <option value="" disabled selected>Select player</option>
                     <option *ngFor="let user of userList" [ngValue]="user">{{user}}</option>
                 </select>
                 <div *ngIf="submitted && f.player3.errors" class="invalid-feedback">

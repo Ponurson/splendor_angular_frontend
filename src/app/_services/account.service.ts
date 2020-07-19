@@ -134,4 +134,8 @@ export class AccountService {
     getUserList() {
         return this.http.get<string[]>(`${environment.apiUrl}/userList`);
     }
+
+    homeInit() {
+        return this.http.get(`${environment.apiUrl}/homeInit`);
+    }
 }

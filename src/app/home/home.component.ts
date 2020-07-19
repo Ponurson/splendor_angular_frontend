@@ -34,10 +34,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.accountService.getUserList().subscribe(data => {
-            this.userList = data;
-        });
+        this.alertService.info('You can test the game by selecting yourself as Player1', {autoClose: true});
 
+        this.accountService.homeInit().subscribe(data => {
+            console.log(data);
+        });
         this.form = this.formBuilder.group({
             player1: ['', Validators.required],
             player2: [''],
@@ -52,10 +53,13 @@ export class HomeComponent implements OnInit, OnDestroy {
             )
             .subscribe(data => {
                 console.log(data);
+                this.accountService.getUserList().subscribe(data2 => {
+                    this.userList = data2;
+                });
                 if (data.state === 'idle' && this.loading === true) {
                     // racing conditions i to tutaj będzie bardzo źle
                     // trzeba to jakoś inaczej zrobić bo przecież nawet jeżeli na backendzie jest
-                   // jest wszystko wporzo to tutaj sobie można zrobić krzywdę
+                    // jest wszystko wporzo to tutaj sobie można zrobić krzywdę
                     this.loading = false;
                     this.alertService.info('no available players', {autoClose: true});
                 } else if (data.state === 'playing' && status !== 'playing') {

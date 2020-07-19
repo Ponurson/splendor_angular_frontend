@@ -43,6 +43,7 @@ export class LoginComponent implements OnInit {
 
         // reset alerts on submit
         this.alertService.clear();
+        this.alertService.info('possible heroku dyno restart, this may take some time', {autoClose: true});
 
         // stop here if form is invalid
         if (this.form.invalid) {

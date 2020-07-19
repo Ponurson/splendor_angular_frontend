@@ -1,4 +1,14 @@
-import {AfterContentInit, AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+    AfterContentInit,
+    AfterViewChecked,
+    AfterViewInit,
+    Component,
+    ElementRef, OnChanges,
+    OnInit,
+    QueryList,
+    ViewChild,
+    ViewChildren
+} from '@angular/core';
 import {first, flatMap, takeUntil} from 'rxjs/operators';
 import {Card, GameState, User} from '@app/_models';
 
@@ -17,7 +27,7 @@ import {Animations} from '@app/animations/animations';
     styleUrls: ['./gameboard.component.less'],
     animations: Animations
 })
-export class GameboardComponent implements OnInit, AfterViewInit, AfterContentInit{
+export class GameboardComponent implements OnInit, AfterViewInit, OnChanges {
     user: User;
     lastPlayer: string;
     gameStateLocal: GameState;
@@ -248,6 +258,7 @@ export class GameboardComponent implements OnInit, AfterViewInit, AfterContentIn
 
 
     getAnimationParams() {
+        this.translateList = new Array<Array<Array<number>>>();
         this.playersDiv.forEach((divLarge: ElementRef) => {
             const {x, y} = divLarge.nativeElement.getBoundingClientRect();
             this.positionY = y;
@@ -265,7 +276,8 @@ export class GameboardComponent implements OnInit, AfterViewInit, AfterContentIn
     ngAfterViewInit(): void {
         this.getAnimationParams();
     }
-    ngAfterContentInit(): void {
+
+    ngOnChanges(): void {
         this.getAnimationParams();
     }
 

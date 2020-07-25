@@ -1,4 +1,4 @@
-<!--<div class="container-fluid container-sm" *ngIf="gameStateLocal != undefined">-->
+<div class="container-fluid container-sm" *ngIf="gameStateLocal != undefined">
 <div class="container-fluid container-sm">
     <div class="row">
         <div class="col-sm-8">
@@ -23,7 +23,10 @@
         </div>
         <div class="col-sm-4">
             <div class="row m-1 ml-1 mr-1">
-                <div class="col-2 col-sm pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles">
+                <div #cardsDiv class="col-2 col-sm pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles, let i = index"
+                     [@pageAnimations]="{value: (!hasCardBeenTaken[12+i] ? 'open' : 'close'),
+                     params: { posX: giveTranslateX((12 + i)),
+                     posY: giveTranslateY((12 + i))}}">
                     <img [src]="noble.graphic" class="img-fluid" alt="Responsive image">
                 </div>
             </div>
@@ -33,8 +36,11 @@
                     {{gameStateLocal.tokens[token]}}
                 </div>
                 <div class="w-100"></div>
-                <div class="col" *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX'], let i = index"
-                     (click)="checkAddCoin(token, i)">
+                <div #cardsDiv class="col" *ngFor="let token of ['DIAMOND','EMERALD','RUBY','SAPPHIRE','ONYX'], let i = index"
+                     (click)="checkAddCoin(token, i)"
+                     [@pageAnimations]="{value: (!hasTokenBeenTaken[token] ? 'open' : 'close'),
+                     params: { posX: giveTranslateX(12 + gameStateLocal.nobles.length + i),
+                     posY: giveTranslateY(12 + gameStateLocal.nobles.length + i)}}">
                     <img src="assets/{{token}}.png" class="img-fluid" alt="Responsive image"
                          [ngStyle]="{'box-shadow':gameStateLocal.tokens[token]> 0 &&
                                  gameStateLocal.isItMyTurn &&
@@ -44,7 +50,10 @@
                                   '0 0 0 0.2rem white')) : '0 0 0 0.2rem white'}"
                     >
                 </div>
-                <div class="col" (click)="checkAddGold('GOLD')">
+                <div #cardsDiv class="col" (click)="checkAddGold('GOLD')"
+                     [@pageAnimations]="{value: (!hasTokenBeenTaken['GOLD'] ? 'open' : 'close'),
+                     params: { posX: giveTranslateX(12 + 5),
+                     posY: giveTranslateY(12 + 5)}}">
                     <img src="assets/GOLD.png" class="img-fluid" alt="Responsive image"
                          [ngStyle]="{'box-shadow':gameStateLocal.isItMyTurn &&
                               gameStateLocal.firstToken === undefined &&
@@ -95,4 +104,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

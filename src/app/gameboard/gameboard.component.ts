@@ -9,7 +9,7 @@ import {
     ViewChild,
     ViewChildren
 } from '@angular/core';
-import {first, flatMap, takeUntil} from 'rxjs/operators';
+import {first, flatMap, map, takeUntil} from 'rxjs/operators';
 import {Card, GameState, User} from '@app/_models';
 
 import {AccountService, AlertService, GameService} from '@app/_services';
@@ -27,10 +27,11 @@ import {Animations} from '@app/animations/animations';
     styleUrls: ['./gameboard.component.less'],
     animations: Animations
 })
-export class GameboardComponent implements OnInit, AfterViewInit, OnChanges {
+export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges {
     user: User;
     lastPlayer: string;
     gameStateLocal: GameState;
+    gameStateTemp: GameState;
     cardsInHand: Card[];
     private zeroTokens: number;
     private dialogRef: MatDialogRef<ReturnCoinsDialogComponent>;
@@ -41,6 +42,7 @@ export class GameboardComponent implements OnInit, AfterViewInit, OnChanges {
     positionY: number;
     translateList: number[][][];
     hasCardBeenTaken: boolean[];
+    hasTokenBeenTaken: Record<string, boolean>;
 
     @ViewChildren('cardsDiv') cardsDiv: QueryList<ElementRef>;
     @ViewChildren('playersDiv') playersDiv: QueryList<ElementRef>;
@@ -56,6 +58,7 @@ export class GameboardComponent implements OnInit, AfterViewInit, OnChanges {
         this.isDisabled = false;
         this.translateList = new Array<Array<Array<number>>>();
         this.hasCardBeenTaken = new Array<boolean>(12).fill(false);
+        this.hasTokenBeenTaken = {DIAMOND: false, EMERALD: false, GOLD: false, SAPPHIRE: false, RUBY: false, ONYX: false};
     }
 
     ngOnInit(): void {
@@ -92,12 +95,12 @@ export class GameboardComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     fullState() {
-        return this.gameService.getFullState()
-            .subscribe(gameState => {
-                console.log(gameState);
-
+        this.hasCardBeenTaken.fill(false);
+        this.hasTokenBeenTaken = {DIAMOND: false, EMERALD: false, GOLD: false, SAPPHIRE: false, RUBY: false, ONYX: false};
+        this.gameService.getFullState()
+            .pipe(map(gameState => {
                 if (this.gameStateLocal !== undefined) {
-                    this.getAnimationParams();
+                    this.getAnimationParams(); // czyli to działa to oznacza że on changes nie jest czymś koniecznym chyba, nie jest
                     for (let i = 0; i < this.gameStateLocal.cardsOnTable.length; i++) {
                         this.hasCardBeenTaken[i] = false;
                         if (this.gameStateLocal.cardsOnTable[i].graphic !==
@@ -105,12 +108,43 @@ export class GameboardComponent implements OnInit, AfterViewInit, OnChanges {
                             this.hasCardBeenTaken[i] = true;
                         }
                     }
+                    // tslint:disable-next-line:forin
+                    for (const tokensKey in this.gameStateLocal.tokens) {
+                        this.hasTokenBeenTaken[tokensKey] = false;
+                        if (this.gameStateLocal.tokens[tokensKey] >
+                            gameState.tokens[tokensKey]) {
+                            this.hasTokenBeenTaken[tokensKey] = true;
+                        }
+                    }
                 }
+                return gameState
+            }))
+            .subscribe(gameState => {
+                console.log(gameState);
 
-                this.gameStateLocal = gameState;
+                if (this.gameStateLocal !== undefined) {
+                    this.getAnimationParams(); // czyli to działa to oznacza że on changes nie jest czymś koniecznym chyba, nie jest
+                    for (let i = 0; i < this.gameStateLocal.cardsOnTable.length; i++) {
+                        this.hasCardBeenTaken[i] = false;
+                        if (this.gameStateLocal.cardsOnTable[i].graphic !==
+                            gameState.cardsOnTable[i].graphic) {
+                            this.hasCardBeenTaken[i] = true;
+                        }
+                    }
+                    // tslint:disable-next-line:forin
+                    for (const tokensKey in this.gameStateLocal.tokens) {
+                        this.hasTokenBeenTaken[tokensKey] = false;
+                        if (this.gameStateLocal.tokens[tokensKey] >
+                            gameState.tokens[tokensKey]) {
+                            this.hasTokenBeenTaken[tokensKey] = true;
+                        }
+                    }
+                }
                 const players = gameState.players;
                 const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
                 this.cardsInHand = currentPlayer.cardsInHand;
+                this.gameStateTemp = gameState;
+                this.gameStateLocal = this.gameStateTemp;
             });
     }
 
@@ -273,13 +307,13 @@ export class GameboardComponent implements OnInit, AfterViewInit, OnChanges {
         });
     }
 
-    ngAfterViewInit(): void {
-        this.getAnimationParams();
-    }
-
-    ngOnChanges(): void {
-        this.getAnimationParams();
-    }
+    // ngAfterViewInit(): void {
+    //     this.getAnimationParams();
+    // }
+    //
+    // ngOnChanges(): void {
+    //     this.getAnimationParams();
+    // }
 
     giveTranslateX(cardNum: number) {
         const currentPlayerName = this.gameStateLocal.currentPlayerName;

@@ -43,6 +43,8 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     translateList: number[][][];
     hasCardBeenTaken: boolean[];
     hasTokenBeenTaken: Record<string, boolean>;
+    hasNobleBeenTaken: boolean[];
+
 
     @ViewChildren('cardsDiv') cardsDiv: QueryList<ElementRef>;
     @ViewChildren('playersDiv') playersDiv: QueryList<ElementRef>;
@@ -58,6 +60,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
         this.isDisabled = false;
         this.translateList = new Array<Array<Array<number>>>();
         this.hasCardBeenTaken = new Array<boolean>(12).fill(false);
+        this.hasNobleBeenTaken = new Array<boolean>(5).fill(false);
         this.hasTokenBeenTaken = {DIAMOND: false, EMERALD: false, GOLD: false, SAPPHIRE: false, RUBY: false, ONYX: false};
     }
 
@@ -97,6 +100,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     fullState() {
         this.hasCardBeenTaken.fill(false);
         this.hasTokenBeenTaken = {DIAMOND: false, EMERALD: false, GOLD: false, SAPPHIRE: false, RUBY: false, ONYX: false};
+        this.hasNobleBeenTaken.fill(false);
         this.gameService.getFullState()
             .subscribe(gameState => {
                 console.log(gameState);
@@ -117,6 +121,15 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                             gameState.tokens[tokensKey]) {
                             this.hasTokenBeenTaken[tokensKey] = true;
                         }
+                    }
+                    for (let i = 0; i < this.gameStateLocal.nobles.length; i++) {
+                        let nobleFlag = true;
+                        for (let j = 0; j < gameState.nobles.length; j++) {
+                            if (this.gameStateLocal.nobles[i].id === gameState.nobles[j].id){
+                                nobleFlag = false;
+                            }
+                        }
+                        this.hasNobleBeenTaken[i] = nobleFlag;
                     }
                 }
                 const players = gameState.players;
@@ -271,7 +284,6 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
         }
     }
 
-
     getAnimationParams() {
         this.translateList = new Array<Array<Array<number>>>();
         this.playersDiv.forEach((divLarge: ElementRef) => {
@@ -288,33 +300,15 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
         });
     }
 
-    // ngAfterViewInit(): void {
-    //     this.getAnimationParams();
-    // }
-    //
-    // ngOnChanges(): void {
-    //     this.getAnimationParams();
-    // }
-
     giveTranslateX(cardNum: number) {
         const currentPlayerName = this.gameStateLocal.currentPlayerName;
-        let playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
-        if (playerNum - 1 < 0) {
-            playerNum = this.gameStateLocal.players.length - 1;
-        } else {
-            playerNum -= 1;
-        }
+        const playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
         return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][0] : 0;
     }
 
     giveTranslateY(cardNum: number) {
         const currentPlayerName = this.gameStateLocal.currentPlayerName;
-        let playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
-        if (playerNum - 1 < 0) {
-            playerNum = this.gameStateLocal.players.length - 1;
-        } else {
-            playerNum -= 1;
-        }
+        const playerNum = this.gameStateLocal.players.map(player => player.playerName).indexOf(currentPlayerName);
         return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][1] : 0;
     }
 

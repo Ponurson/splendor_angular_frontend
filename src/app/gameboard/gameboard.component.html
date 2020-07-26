@@ -12,7 +12,8 @@
                      (click)="isDisabled ?  null : checkAddCard(gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)])"
                      [@pageAnimations]="{value: (!hasCardBeenTaken[11- (number1 * 4 + number2)] ? 'open' : 'close'),
                      params: { posX: giveTranslateX((number1 * 4 + number2)),
-                     posY: giveTranslateY((number1 * 4 + number2))}}">
+                     posY: giveTranslateY((number1 * 4 + number2))}}"
+                     (@pageAnimations.done)="animEnd($event)">
                     <img src="{{gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].graphic}}"
                          class="img-fluid w-100" alt="Responsive image"
                          [ngStyle]="{'box-shadow':!isDisabled && gameStateLocal.cardsOnTable[11- (number1 * 4 + number2)].clickable &&
@@ -26,7 +27,8 @@
                 <div #cardsDiv class="col-2 col-sm pl-1 pr-1" *ngFor="let noble of gameStateLocal.nobles, let i = index"
                      [@pageAnimations]="{value: (!hasCardBeenTaken[12+i] ? 'open' : 'close'),
                      params: { posX: giveTranslateX((12 + i)),
-                     posY: giveTranslateY((12 + i))}}">
+                     posY: giveTranslateY((12 + i))}}"
+                     (@pageAnimations.done)="animEnd($event)">
                     <img [src]="noble.graphic" class="img-fluid" alt="Responsive image">
                 </div>
             </div>
@@ -40,7 +42,8 @@
                      (click)="checkAddCoin(token, i)"
                      [@pageAnimations]="{value: (!hasTokenBeenTaken[token] ? 'open' : 'close'),
                      params: { posX: giveTranslateX(12 + gameStateLocal.nobles.length + i),
-                     posY: giveTranslateY(12 + gameStateLocal.nobles.length + i)}}">
+                     posY: giveTranslateY(12 + gameStateLocal.nobles.length + i)}}"
+                     (@pageAnimations.done)="animEnd($event)">
                     <img src="assets/{{token}}.png" class="img-fluid" alt="Responsive image"
                          [ngStyle]="{'box-shadow':gameStateLocal.tokens[token]> 0 &&
                                  gameStateLocal.isItMyTurn &&

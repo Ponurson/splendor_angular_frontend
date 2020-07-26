@@ -98,27 +98,6 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
         this.hasCardBeenTaken.fill(false);
         this.hasTokenBeenTaken = {DIAMOND: false, EMERALD: false, GOLD: false, SAPPHIRE: false, RUBY: false, ONYX: false};
         this.gameService.getFullState()
-            .pipe(map(gameState => {
-                if (this.gameStateLocal !== undefined) {
-                    this.getAnimationParams(); // czyli to działa to oznacza że on changes nie jest czymś koniecznym chyba, nie jest
-                    for (let i = 0; i < this.gameStateLocal.cardsOnTable.length; i++) {
-                        this.hasCardBeenTaken[i] = false;
-                        if (this.gameStateLocal.cardsOnTable[i].graphic !==
-                            gameState.cardsOnTable[i].graphic) {
-                            this.hasCardBeenTaken[i] = true;
-                        }
-                    }
-                    // tslint:disable-next-line:forin
-                    for (const tokensKey in this.gameStateLocal.tokens) {
-                        this.hasTokenBeenTaken[tokensKey] = false;
-                        if (this.gameStateLocal.tokens[tokensKey] >
-                            gameState.tokens[tokensKey]) {
-                            this.hasTokenBeenTaken[tokensKey] = true;
-                        }
-                    }
-                }
-                return gameState
-            }))
             .subscribe(gameState => {
                 console.log(gameState);
 
@@ -144,7 +123,9 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                 const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
                 this.cardsInHand = currentPlayer.cardsInHand;
                 this.gameStateTemp = gameState;
-                this.gameStateLocal = this.gameStateTemp;
+                if (this.gameStateLocal === undefined) {
+                    this.gameStateLocal = this.gameStateTemp;
+                }
             });
     }
 
@@ -270,7 +251,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                             }
                         }
                     }
-
+                    this.gameStateTemp = gameState;
                     this.gameStateLocal = gameState;
                     this.alertService.info('Reserve card from table', {autoClose: true});
                 });
@@ -335,5 +316,9 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
             playerNum -= 1;
         }
         return this.translateList[playerNum] !== undefined ? this.translateList[playerNum][cardNum][1] : 0;
+    }
+
+    animEnd($event: any) {
+        this.gameStateLocal = this.gameStateTemp;
     }
 }

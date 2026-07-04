@@ -7,3 +7,13 @@ Description: Turn based card/board game. New user has to register and login. Use
 REST app, with frontend developed in Angular, basic auth for security, can be tested through github pages: https://ponurson.github.io/splendor_angular_frontend/ Backend - Spring Boot with Spring Security on Heroku with Heroku Postgres
 
 Frontend was based on: https://jasonwatmore.com/post/2020/04/28/angular-9-user-registration-and-login-example-tutorial
+
+## Security audit
+
+Run dependency vulnerability checks without changing dependencies:
+
+```sh
+npm run security:audit
+```
+
+The script runs `npm audit --package-lock-only --audit-level=high`, so it reports from `package-lock.json` and exits non-zero for high or critical vulnerabilities. It does not require secrets.

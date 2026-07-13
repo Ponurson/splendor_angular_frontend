@@ -11,7 +11,7 @@ import {interval, Observable, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent} from '@app/dialog/dialog.component';
 
-@Component({templateUrl: 'home.component.html'})
+@Component({templateUrl: 'home.component.html', standalone: false})
 export class HomeComponent implements OnInit, OnDestroy {
     user: User;
     form: FormGroup;

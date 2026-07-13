@@ -6,6 +6,7 @@ import {HomeComponent} from '@app/home';
     // tslint:disable-next-line:component-selector
     selector: 'dialog-component',
     templateUrl: './dialog.component.html',
+    standalone: false,
     styleUrls: ['./dialog.component.less']
 })
 export class DialogComponent {

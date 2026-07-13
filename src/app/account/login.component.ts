@@ -7,7 +7,7 @@ import {environment} from '@environments/environment';
 
 import {AccountService, AlertService} from '@app/_services';
 
-@Component({templateUrl: 'login.component.html'})
+@Component({templateUrl: 'login.component.html', standalone: false})
 export class LoginComponent implements OnInit {
     form: FormGroup;
     loading = false;

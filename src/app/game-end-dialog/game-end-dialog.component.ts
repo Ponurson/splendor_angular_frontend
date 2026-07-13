@@ -5,6 +5,7 @@ import {GameboardComponent} from '@app/gameboard/gameboard.component';
 @Component({
   selector: 'app-game-end-dialog-component',
   templateUrl: './game-end-dialog.component.html',
+  standalone: false,
   styleUrls: ['./game-end-dialog.component.less']
 })
 export class GameEndDialogComponent {

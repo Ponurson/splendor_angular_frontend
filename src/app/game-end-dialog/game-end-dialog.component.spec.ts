@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { GameEndDialogComponent } from './game-end-dialog.component';
 
@@ -6,9 +7,13 @@ describe('GameEndDialogComponent', () => {
   let component: GameEndDialogComponent;
   let fixture: ComponentFixture<GameEndDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GameEndDialogComponent ]
+      declarations: [ GameEndDialogComponent ],
+      providers: [
+        { provide: MatDialogRef, useValue: { close: () => {}, disableClose: false } },
+        { provide: MAT_DIALOG_DATA, useValue: {} }
+      ]
     })
     .compileComponents();
   }));
@@ -16,7 +21,6 @@ describe('GameEndDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GameEndDialogComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

@@ -1,4 +1,4 @@
-﻿import { NgModule } from '@angular/core';
+﻿import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -36,6 +36,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         ReturnCoinsDialogComponent ,
         GameEndDialogComponent],
     providers: [
+        // Angular 21 defaults this NgModule app to NoopNgZone; the app relies on zone-based
+        // change detection for its RxJS interval() polling (home lobby + gameboard), so opt in.
+        provideZoneChangeDetection(),
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
 

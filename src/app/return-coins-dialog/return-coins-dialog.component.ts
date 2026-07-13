@@ -6,6 +6,7 @@ import {GameService} from '@app/_services';
 @Component({
   selector: 'app-return-coins-dialog-component',
   templateUrl: './return-coins-dialog.component.html',
+  standalone: false,
   styleUrls: ['./return-coins-dialog.component.less']
 })
 export class ReturnCoinsDialogComponent {
@@ -32,5 +33,4 @@ export class ReturnCoinsDialogComponent {
     }
   }
 }
-
 

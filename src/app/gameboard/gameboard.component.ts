@@ -24,6 +24,7 @@ import {Animations} from '@app/animations/animations';
 @Component({
     selector: 'app-gameboard',
     templateUrl: './gameboard.component.html',
+    standalone: false,
     styleUrls: ['./gameboard.component.less'],
     animations: Animations
 })
@@ -32,7 +33,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     lastPlayer: string;
     gameStateLocal: GameState;
     gameStateTemp: GameState;
-    cardsInHand: Card[];
+    cardsInHand: Card[] = [];
     private zeroTokens: number;
     private dialogRef: MatDialogRef<ReturnCoinsDialogComponent>;
     private dialogRef2: MatDialogRef<GameEndDialogComponent>;
@@ -133,8 +134,8 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                     }
                 }
                 const players = gameState.players;
-                const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username);
-                this.cardsInHand = currentPlayer.cardsInHand;
+                const currentPlayer = players.find(player => player.playerName === this.accountService.userValue.username) || players[0];
+                this.cardsInHand = currentPlayer ? currentPlayer.cardsInHand : [];
                 this.gameStateTemp = gameState;
                 if (this.gameStateLocal === undefined) {
                     this.gameStateLocal = this.gameStateTemp;

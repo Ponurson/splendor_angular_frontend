@@ -41,17 +41,17 @@ export class AccountService {
     // }
 
     login(username, password) {
+        // Basic credentials are sent once, only to obtain a backend-issued session token.
         const headers = new HttpHeaders({
             Authorization: `Basic ` + btoa(username + ':' + password)
         });
 
-        return this.http.get(`${environment.apiUrl}/login`, {headers})
+        return this.http.get<{ token: string }>(`${environment.apiUrl}/login`, {headers})
             .pipe(map(response => {
                 const user: User = {
                     id: 'test',
                     username,
-                    password,
-                    token: btoa(username + ':' + password)
+                    token: response.token
                 };
                 localStorage.setItem('user', JSON.stringify(user));
                 this.userSubject.next(user);

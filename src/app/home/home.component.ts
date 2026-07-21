@@ -62,11 +62,11 @@ export class HomeComponent implements OnInit, OnDestroy {
                     // jest wszystko wporzo to tutaj sobie można zrobić krzywdę
                     this.loading = false;
                     this.alertService.info('no available players', {autoClose: true});
-                } else if (data.state === 'playing' && status !== 'playing') {
+                } else if (data.state === 'playing' && this.status !== 'playing') {
                     this.unsubscribe$.next();
                     this.unsubscribe$.complete();
                     this.router.navigate(['game']);
-                } else if (data.state === 'challenged' && status !== 'challenged') {
+                } else if (data.state === 'challenged' && this.status !== 'challenged') {
                     const dialogRef = this.dialog.open(DialogComponent, {
                         width: '250px',
                         data: {challenger: data.challenger}
@@ -95,7 +95,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         }
                     });
                 }
-                status = data.state;
+                this.status = data.state;
             });
     }
 

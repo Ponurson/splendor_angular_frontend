@@ -57,11 +57,12 @@
                      [@pageAnimations]="{value: (!hasTokenBeenTaken['GOLD'] ? 'open' : 'close'),
                      params: { posX: giveTranslateX(12 + 5),
                      posY: giveTranslateY(12 + 5)}}">
-                    <img src="assets/GOLD.png" class="img-fluid" alt="Responsive image"
-                         [ngStyle]="{'box-shadow':gameStateLocal.isItMyTurn &&
+                    <img src="assets/GOLD.png" class="img-fluid"
+                         alt="{{gameStateLocal.isItReserveTime ? 'Cancel reserving' : 'Reserve a card'}}"
+                         [ngStyle]="{'box-shadow': gameStateLocal.isItReserveTime? '0 0 0 0.2rem yellow' :
+                              (gameStateLocal.isItMyTurn &&
                               gameStateLocal.firstToken === undefined &&
-                              !gameStateLocal.isItReserveTime &&
-                              cardsInHand.length < 3 ? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white'}">
+                              cardsInHand.length < 3 ? '0 0 0 0.2rem aqua' : '0 0 0 0.2rem white')}">
                 </div>
             </div>
 

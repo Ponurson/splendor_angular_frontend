@@ -257,9 +257,9 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     }
 
     checkAddGold(gold: string) {
+        // no isItReserveTime guard: a second click is the way out of reserve mode
         if (this.gameStateLocal.isItMyTurn &&
             this.gameStateLocal.firstToken === undefined &&
-            !this.gameStateLocal.isItReserveTime &&
             this.cardsInHand.length < 3) {
             this.gameStateLocal.firstToken = gold;
             this.gameService.sendGoldToken()
@@ -277,7 +277,8 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                     }
                     this.gameStateTemp = gameState;
                     this.gameStateLocal = gameState;
-                    this.alertService.info('Reserve card from table', {autoClose: true});
+                    this.alertService.info(gameState.isItReserveTime ?
+                        'Reserve card from table' : 'Reserve cancelled', {autoClose: true});
                 });
         }
     }

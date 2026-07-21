@@ -1,8 +1,9 @@
 <h1 mat-dialog-title>Finished</h1>
 <div mat-dialog-content>
-    <p *ngFor="let player of data.players">
+    <p *ngFor="let player of ranking" [class.winner]="isWinner(player)">
+        <span *ngIf="isWinner(player)">🏆 </span>
         {{player.playerName}}
-        {{player.points}}
+        &mdash; {{player.points}} pts, {{cardCount(player)}} cards
     </p>
 </div>
 <div mat-dialog-actions>

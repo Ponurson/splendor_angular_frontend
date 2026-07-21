@@ -65,6 +65,14 @@
                 </div>
             </div>
 
+            <div class="row m-1" *ngIf="canConfirmSingleToken">
+                <div class="col text-center">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="confirmSingleToken()">
+                        Take only 1 {{gameStateLocal.firstToken}} (click the pile again for 2)
+                    </button>
+                </div>
+            </div>
+
             <div class="row m-1">
                 <div class="col-4 mt-1 mb-1" *ngFor="let card of cardsInHand"
                      (click)="isDisabled ?  null : checkAddCard(card)">

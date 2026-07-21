@@ -13,7 +13,7 @@ import {first, flatMap, map, takeUntil} from 'rxjs/operators';
 import {Card, GameState, User} from '@app/_models';
 
 import {AccountService, AlertService, GameService} from '@app/_services';
-import {interval, Subject} from 'rxjs';
+import {interval, Observable, Subject} from 'rxjs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ReturnCoinsDialogComponent} from '@app/return-coins-dialog/return-coins-dialog.component';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -156,80 +156,88 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
             });
     }
 
+    private applyMove(move: Observable<Record<string, string>>) {
+        move.subscribe(data => {
+            console.log(data);
+            if (data.message === 'Give back tokens') {
+                this.returnTokens();
+            }
+            this.fullState();
+        });
+    }
+
+    private sendMixed() {
+        this.applyMove(this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
+            this.gameStateLocal.secondToken));
+    }
+
     checkAddCoin(token: string, i: number) {
-        if (!this.gameStateLocal.isItReserveTime) {
-            this.zeroTokens = 0;
-            for (const tokensKey in this.gameStateLocal.tokens) {
-                // gold is only gained by reserving, an empty gold pile must not shrink the "take tokens" count
-                if (tokensKey !== 'GOLD' && this.gameStateLocal.tokens[tokensKey] === 0) {
-                    this.zeroTokens++;
-                }
-            }
-            if (this.zeroTokens === 5) {
-                this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
-                    this.gameStateLocal.secondToken).subscribe(data => {
-                    console.log(data);
-                    if (data.message === 'Give back tokens') {
-                        this.returnTokens();
-                    }
-                    this.fullState();
-                });
-            }
-            if (this.gameStateLocal.isItMyTurn && this.gameStateLocal.tokens[token] > 0) {
-                if (this.gameStateLocal.firstToken === undefined) {
-                    this.gameStateLocal.firstToken = token;
-                    if (this.zeroTokens === 4) {
-                        this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
-                            this.gameStateLocal.secondToken).subscribe(data => {
-                            console.log(data);
-                            if (data.message === 'Give back tokens') {
-                                this.returnTokens();
-                            }
-                            this.fullState();
-                        });
-                    }
-                } else if (this.gameStateLocal.firstToken === token &&
-                    this.gameStateLocal.secondToken === undefined &&
-                    this.gameStateLocal.tokens[token] > 3) {
-                    this.gameStateLocal.secondToken = token;
-                    this.gameService.sendTwoTokens(token)
-                        .subscribe(data => {
-                            console.log(data);
-                            if (data.message === 'Give back tokens') {
-                                this.returnTokens();
-                            }
-                            this.fullState();
-                        });
-                } else if (this.gameStateLocal.firstToken !== token &&
-                    this.gameStateLocal.secondToken === undefined) {
-                    this.gameStateLocal.secondToken = token;
-                    if (this.zeroTokens === 3) {
-                        this.gameService.sendMixedTokens(this.gameStateLocal.firstToken,
-                            this.gameStateLocal.secondToken).subscribe(data => {
-                            console.log(data);
-                            if (data.message === 'Give back tokens') {
-                                this.returnTokens();
-                            }
-                            this.fullState();
-                        });
-                    }
-                } else if (this.gameStateLocal.firstToken !== token &&
-                    this.gameStateLocal.secondToken !== token &&
-                    this.gameStateLocal.thirdToken === undefined) {
-                    this.gameStateLocal.thirdToken = token;
-                    this.gameService.sendThreeTokens(this.gameStateLocal.firstToken,
-                        this.gameStateLocal.secondToken,
-                        this.gameStateLocal.thirdToken)
-                        .subscribe(data => {
-                            console.log(data);
-                            if (data.message === 'Give back tokens') {
-                                this.returnTokens();
-                            }
-                            this.fullState();
-                        });
-                }
+        if (this.gameStateLocal.isItReserveTime) {
+            return;
+        }
+        this.zeroTokens = 0;
+        for (const tokensKey in this.gameStateLocal.tokens) {
+            // gold is only gained by reserving, an empty gold pile must not shrink the "take tokens" count
+            if (tokensKey !== 'GOLD' && this.gameStateLocal.tokens[tokensKey] === 0) {
+                this.zeroTokens++;
             }
         }
+        if (this.zeroTokens === 5) {
+            this.sendMixed();
+        }
+        if (!this.gameStateLocal.isItMyTurn || !(this.gameStateLocal.tokens[token] > 0)) {
+            return;
+        }
+        if (this.gameStateLocal.firstToken === undefined) {
+            this.gameStateLocal.firstToken = token;
+            // Only one colour is left. A pile of 4+ still allows the "take two of one colour"
+            // move, so do not submit the single token yet - wait for a second click on the same
+            // pile, or for the confirm button (canConfirmSingleToken) to settle for just one.
+            if (this.zeroTokens === 4 && !(this.gameStateLocal.tokens[token] > 3)) {
+                this.sendMixed();
+            }
+        } else if (this.gameStateLocal.firstToken === token &&
+            this.gameStateLocal.secondToken === undefined &&
+            this.gameStateLocal.tokens[token] > 3) {
+            this.gameStateLocal.secondToken = token;
+            this.applyMove(this.gameService.sendTwoTokens(token));
+        } else if (this.gameStateLocal.firstToken !== token &&
+            this.gameStateLocal.secondToken === undefined) {
+            this.gameStateLocal.secondToken = token;
+            if (this.zeroTokens === 3) {
+                this.sendMixed();
+            }
+        } else if (this.gameStateLocal.firstToken !== token &&
+            this.gameStateLocal.secondToken !== token &&
+            this.gameStateLocal.thirdToken === undefined) {
+            this.gameStateLocal.thirdToken = token;
+            this.applyMove(this.gameService.sendThreeTokens(this.gameStateLocal.firstToken,
+                this.gameStateLocal.secondToken,
+                this.gameStateLocal.thirdToken));
+        }
+    }
+
+    /** True while a "take two of one colour" move is still possible but the player has only
+     *  clicked once - the confirm button lets them settle for a single token instead. The pile
+     *  check also keeps the button hidden once a small last pile has been auto-submitted. */
+    get canConfirmSingleToken(): boolean {
+        return this.gameStateLocal !== undefined &&
+            this.zeroTokens === 4 &&
+            this.gameStateLocal.isItMyTurn &&
+            !this.gameStateLocal.isItReserveTime &&
+            this.gameStateLocal.firstToken !== undefined &&
+            this.gameStateLocal.secondToken === undefined &&
+            this.gameStateLocal.tokens[this.gameStateLocal.firstToken] > 3;
+    }
+
+    confirmSingleToken() {
+        if (!this.canConfirmSingleToken) {
+            return;
+        }
+        const token = this.gameStateLocal.firstToken;
+        // mirrors the two-token branch: setting secondToken records that this turn's move is sent
+        this.gameStateLocal.secondToken = token;
+        this.applyMove(this.gameService.sendMixedTokens(token, undefined));
     }
 
     checkAddCard(i: Card) {

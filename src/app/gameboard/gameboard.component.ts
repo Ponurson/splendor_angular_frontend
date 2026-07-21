@@ -160,7 +160,8 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
         if (!this.gameStateLocal.isItReserveTime) {
             this.zeroTokens = 0;
             for (const tokensKey in this.gameStateLocal.tokens) {
-                if (this.gameStateLocal.tokens[tokensKey] === 0) {
+                // gold is only gained by reserving, an empty gold pile must not shrink the "take tokens" count
+                if (tokensKey !== 'GOLD' && this.gameStateLocal.tokens[tokensKey] === 0) {
                     this.zeroTokens++;
                 }
             }
@@ -188,6 +189,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                         });
                     }
                 } else if (this.gameStateLocal.firstToken === token &&
+                    this.gameStateLocal.secondToken === undefined &&
                     this.gameStateLocal.tokens[token] > 3) {
                     this.gameStateLocal.secondToken = token;
                     this.gameService.sendTwoTokens(token)

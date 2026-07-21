@@ -7,7 +7,7 @@ export const environment = {
     // ponytail: backend runs on the same host as the frontend, so derive the address
     // from the browser instead of hardcoding a LAN IP that DHCP can change.
     // Hardcode again only if the backend ever moves to a different host.
-    apiUrl: `http://${location.hostname}:8090`
+    apiUrl: `http://${location.hostname}:8092`
 };
 
 /*

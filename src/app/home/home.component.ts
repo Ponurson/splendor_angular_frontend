@@ -7,6 +7,7 @@ import {first, flatMap, takeUntil} from 'rxjs/operators';
 import {environment} from '@environments/environment';
 
 import {AccountService, AlertService} from '@app/_services';
+import {LocalVsBotsGameService} from '@app/_offline/local-vs-bots-game.service';
 import {interval, Observable, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent} from '@app/dialog/dialog.component';
@@ -20,6 +21,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     status: string;
     private unsubscribe$ = new Subject<void>();
     userList: string[];
+    // the offline (Android) build has no other humans to invite
+    offlineBuild = environment.offline;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -28,7 +31,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         private accountService: AccountService,
         private alertService: AlertService,
         private http: HttpClient,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private localGame: LocalVsBotsGameService
     ) {
         this.user = this.accountService.userValue;
     }
@@ -101,6 +105,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     get f() {
         return this.form.controls;
+    }
+
+    startLocalGame(botCount: number) {
+        this.localGame.start({botCount});
     }
 
     onSubmit() {

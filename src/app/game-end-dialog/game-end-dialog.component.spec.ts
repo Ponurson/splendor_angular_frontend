@@ -41,8 +41,9 @@ describe('GameEndDialogComponent ranking', () => {
     return TestBed.createComponent(GameEndDialogComponent).componentInstance;
   };
 
+  // the real DTO (backend PlayerWrapper and the local engine) sends purchased cards as "cards"
   const player = (playerName: string, points: number, cards: number) =>
-    ({ playerName, points, cardsOwned: new Array(cards).fill({}) });
+    ({ playerName, points, cards: new Array(cards).fill({}) });
 
   it('sorts by points descending', () => {
     const c = build([player('a', 3, 5), player('b', 15, 9), player('c', 8, 2)]);

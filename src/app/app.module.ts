@@ -17,6 +17,7 @@ import { GameboardComponent } from './gameboard/gameboard.component';
 import { ReturnCoinsDialogComponent } from './return-coins-dialog/return-coins-dialog.component';
 import { GameEndDialogComponent } from './game-end-dialog/game-end-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { offlineBackendProvider } from './_offline/offline-backend';
 
 @NgModule({
     imports: [
@@ -42,8 +43,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
 
-        // provider used to create fake backend
-        // fakeBackendProvider
+        // every build: game endpoints go local while a "play vs computer" session is
+        // active; the offline (Android) build additionally emulates login and the lobby
+        offlineBackendProvider,
     ],
     bootstrap: [AppComponent]
 })

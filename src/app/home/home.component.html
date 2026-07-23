@@ -1,4 +1,22 @@
 <div class="card">
+    <h4 class="card-header">Play vs computer</h4>
+    <div class="card-body">
+        <div class="form-group">
+            <label for="botCount">Computer opponents</label>
+            <select id="botCount" class="custom-select" #botCount>
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" (click)="startLocalGame(+botCount.value)">
+                Play with the computer
+            </button>
+        </div>
+    </div>
+</div>
+<div class="card mt-3" *ngIf="!offlineBuild">
     <h4 class="card-header">Invite Players</h4>
     <div class="card-body">
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -10,7 +28,7 @@
                     <option *ngFor="let user of userList" [ngValue]="user">{{user}}</option>
                 </select>
                 <div *ngIf="submitted && f.player1.errors" class="invalid-feedback">
-                    <div *ngIf="f.username.errors.required">Player name is required</div>
+                    <div *ngIf="f.player1.errors.required">Player name is required</div>
                 </div>
             </div>
             <div class="form-group">
@@ -21,7 +39,7 @@
                     <option *ngFor="let user of userList" [ngValue]="user">{{user}}</option>
                 </select>
                 <div *ngIf="submitted && f.player2.errors" class="invalid-feedback">
-                    <div *ngIf="f.password.errors.required">Player name is required</div>
+                    <div *ngIf="f.player2.errors.required">Player name is required</div>
                 </div>
             </div>
             <div class="form-group">
@@ -32,7 +50,7 @@
                     <option *ngFor="let user of userList" [ngValue]="user">{{user}}</option>
                 </select>
                 <div *ngIf="submitted && f.player3.errors" class="invalid-feedback">
-                    <div *ngIf="f.password.errors.required">Player name is required</div>
+                    <div *ngIf="f.player3.errors.required">Player name is required</div>
                 </div>
             </div>
             <div class="form-group">

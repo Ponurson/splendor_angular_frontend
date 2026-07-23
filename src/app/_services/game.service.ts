@@ -93,6 +93,12 @@ export class GameService {
         return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/reserveCardFromDeck`, (number1));
     }
 
+    /** Local "play vs computer" games: asks for exactly one bot turn; a stale revision is a no-op. */
+    advanceComputerTurn(expectedRevision: number) {
+        return this.http.post<Record<string, string>>(`${environment.apiUrl}/game/advanceComputerTurn`,
+            ({expectedRevision}));
+    }
+
     setHasSeenResults() {
         return this.http.get<Record<string, string>>(`${environment.apiUrl}/game/hasSeenResults`);
     }

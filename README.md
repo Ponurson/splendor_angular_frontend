@@ -8,6 +8,20 @@ REST app, with frontend developed in Angular, basic auth for security, can be te
 
 Frontend was based on: https://jasonwatmore.com/post/2020/04/28/angular-9-user-registration-and-login-example-tutorial
 
+## Play vs computer (local bots)
+
+The home page has a "Play vs computer" section: pick 1–3 computer opponents
+(default 1) and start. The whole game then runs inside the browser — an HTTP
+interceptor (`src/app/_offline/`) answers every `/game/*` call from a local
+TypeScript port of the backend rules, so nothing reaches Spring until the game
+ends. Online multiplayer keeps using the REST backend unchanged.
+
+The offline/Android build (`npm run build:offline`, `npm run cap:sync` to
+update the Capacitor project) additionally emulates login and the lobby, so
+the APK needs no server at all. Card and noble data is generated from the
+backend's `data.sql` with `npm run generate:game-data` — do not edit
+`game-data.ts` by hand.
+
 ## Security audit
 
 Run dependency vulnerability checks without changing dependencies:

@@ -39,6 +39,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     private dialogRef2: MatDialogRef<GameEndDialogComponent>;
     private unsubscribe$ = new Subject<void>();
     isDisabled: boolean;
+    botTurnInFlight = false;
     positionX: number;
     positionY: number;
     translateList: number[][][];
@@ -91,7 +92,9 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                                 );
                         });
                 }
-                if (data.state !== this.lastPlayer) {
+                // on endGame the block above already fetched the final state and closed the
+                // session - another fullState() here would go to a game that no longer exists
+                if (data.state !== this.lastPlayer && data.state !== 'endGame') {
                     this.fullState();
                 }
                 this.lastPlayer = data.state;
@@ -140,7 +143,27 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                 if (this.gameStateLocal === undefined) {
                     this.gameStateLocal = this.gameStateTemp;
                 }
+                // a refresh mid "give back tokens" would otherwise leave the game stuck
+                if (gameState.isItMyTurn && !this.dialogRef && currentPlayer &&
+                    Object.values(currentPlayer.tokens).reduce((s, n) => s + n, 0) > 10) {
+                    this.returnTokens();
+                }
+                this.maybeAdvanceComputerTurn(gameState);
             });
+    }
+
+    /** When a bot is on the move, ask the local backend for exactly one turn. The flag
+     *  and the revision keep retries and double polling from playing it twice; the next
+     *  poll animates the move and triggers the following bot, so bots play sequentially. */
+    private maybeAdvanceComputerTurn(gameState: GameState) {
+        const current = gameState.players.find(p => p.playerName === gameState.currentPlayerName);
+        if (!current || !current.isComputer || this.botTurnInFlight) {
+            return;
+        }
+        this.botTurnInFlight = true;
+        this.gameService.advanceComputerTurn(gameState.revision)
+            .subscribe(() => this.botTurnInFlight = false,
+                () => this.botTurnInFlight = false);
     }
 
     returnTokens() {

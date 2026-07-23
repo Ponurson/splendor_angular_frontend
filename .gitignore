@@ -2,6 +2,8 @@
 
 # compiled output
 /dist
+# Capacitor Android project — standalone git repo (Ponurson/android), built via androidkit abuild
+/android
 /tmp
 /out-tsc
 /.angular

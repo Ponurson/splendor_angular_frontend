@@ -21,7 +21,7 @@ export class GameEndDialogComponent {
   }
 
   cardCount(player: Player): number {
-    return player.cardsOwned ? player.cardsOwned.length : 0;
+    return player.cards ? player.cards.length : 0;
   }
 
   /** Rules allow a shared win when points and card count both tie. */

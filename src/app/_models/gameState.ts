@@ -10,6 +10,8 @@ export class GameState {
     isItMyTurn: boolean;
     isItReserveTime: boolean;
     currentPlayerName: string;
+    // local "play vs computer" games only: guards advanceComputerTurn against replays
+    revision: number;
     firstToken: string;
     secondToken: string;
     thirdToken: string;

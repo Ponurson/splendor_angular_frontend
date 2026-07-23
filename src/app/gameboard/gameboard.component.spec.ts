@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { AccountService, AlertService, GameService } from '@app/_services';
 
 import { GameboardComponent } from './gameboard.component';
@@ -26,7 +26,8 @@ describe('GameboardComponent', () => {
     gameService = {
       sendMixedTokens: jasmine.createSpy('sendMixedTokens').and.returnValue(of({})),
       sendTwoTokens: jasmine.createSpy('sendTwoTokens').and.returnValue(of({})),
-      sendThreeTokens: jasmine.createSpy('sendThreeTokens').and.returnValue(of({}))
+      sendThreeTokens: jasmine.createSpy('sendThreeTokens').and.returnValue(of({})),
+      advanceComputerTurn: jasmine.createSpy('advanceComputerTurn').and.returnValue(of({}))
     };
     TestBed.configureTestingModule({
       declarations: [ GameboardComponent ],
@@ -81,5 +82,40 @@ describe('GameboardComponent', () => {
 
     expect(gameService.sendMixedTokens).toHaveBeenCalledWith('RUBY', undefined);
     expect(component.canConfirmSingleToken).toBe(false);
+  });
+
+  /** Full state where a bot named "Computer 1" is on the move. */
+  const botOnTheMove = (revision: number) => ({
+    currentPlayerName: 'Computer 1',
+    revision,
+    players: [
+      { playerName: 'test', isComputer: false },
+      { playerName: 'Computer 1', isComputer: true }
+    ]
+  }) as any;
+
+  it('requests one bot turn per response, guarded against double polling', () => {
+    const pending = new Subject<any>();
+    gameService.advanceComputerTurn.and.returnValue(pending);
+
+    (component as any).maybeAdvanceComputerTurn(botOnTheMove(7));
+    (component as any).maybeAdvanceComputerTurn(botOnTheMove(7));   // duplicate poll
+
+    expect(gameService.advanceComputerTurn).toHaveBeenCalledTimes(1);
+    expect(gameService.advanceComputerTurn).toHaveBeenCalledWith(7);
+
+    pending.next({ message: 'Operation Confirmed' });
+    pending.complete();
+    expect(component.botTurnInFlight).toBe(false);
+  });
+
+  it('never advances a turn while a human is on the move', () => {
+    (component as any).maybeAdvanceComputerTurn({
+      currentPlayerName: 'test',
+      revision: 3,
+      players: [{ playerName: 'test', isComputer: false }]
+    } as any);
+
+    expect(gameService.advanceComputerTurn).not.toHaveBeenCalled();
   });
 });

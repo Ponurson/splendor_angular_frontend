@@ -4,6 +4,8 @@
 
 export const environment = {
     production: false,
+    // true only in environment.offline.ts: the whole backend is emulated in-app
+    offline: false,
     // ponytail: backend runs on the same host as the frontend, so derive the address
     // from the browser instead of hardcoding a LAN IP that DHCP can change.
     // Hardcode again only if the backend ever moves to a different host.

@@ -6,6 +6,7 @@ import {map} from 'rxjs/operators';
 
 import {environment} from '@environments/environment';
 import {User, Invitation} from '@app/_models';
+import {GameModeService} from '@app/_services/game-mode.service';
 
 
 @Injectable({providedIn: 'root'})
@@ -15,7 +16,8 @@ export class AccountService {
 
     constructor(
         private router: Router,
-        private http: HttpClient
+        private http: HttpClient,
+        private gameMode: GameModeService
     ) {
         this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('user')));
         this.user = this.userSubject.asObservable();
@@ -63,6 +65,10 @@ export class AccountService {
     }
 
     logout() {
+        // the local "play vs computer" mode must not survive into the next login
+        if (this.userValue) {
+            this.gameMode.clear(this.userValue.username);
+        }
         // remove user from local storage and set current user to null
         localStorage.removeItem('user');
         this.userSubject.next(null);
@@ -70,6 +76,8 @@ export class AccountService {
     }
 
     invite(invitation: Invitation) {
+        // an online invitation always plays against Spring, never the local bots
+        this.gameMode.clear(this.userValue ? this.userValue.username : null);
         return this.http.post(`${environment.apiUrl}/invite`, {invitation});
     }
 

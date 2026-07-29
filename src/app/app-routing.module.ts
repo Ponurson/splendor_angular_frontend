@@ -12,7 +12,8 @@ const routes: Routes = [
     { path: '', component: HomeComponent, canActivate: [AuthGuard] },
     { path: 'users', loadChildren: usersModule, canActivate: [AuthGuard] },
     { path: 'account', loadChildren: accountModule },
-    { path: 'game', component: GameboardComponent },
+    // guarded like the rest: the board dereferences the logged-in user on its first poll
+    { path: 'game', component: GameboardComponent, canActivate: [AuthGuard] },
 
     // otherwise redirect to home
     { path: '**', redirectTo: '' }

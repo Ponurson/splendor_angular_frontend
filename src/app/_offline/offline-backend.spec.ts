@@ -55,10 +55,11 @@ describe('OfflineBackendInterceptor', () => {
     it('keeps GET reads pure: polling never advances the game', () => {
         runtime.start(1);
         const before = JSON.stringify(runtime.game.state);
-        send(new HttpRequest('GET', url('/game/getState')));
+        const state = send(new HttpRequest('GET', url('/game/getState')));
         send(new HttpRequest('GET', url('/game/getFullState')));
         send(new HttpRequest('GET', url('/game/getState')));
         expect(JSON.stringify(runtime.game.state)).toBe(before);
+        expect(state.revision).toBe(String(runtime.game.state.revision));
     });
 
     it('advances a bot turn only for the expected revision', () => {

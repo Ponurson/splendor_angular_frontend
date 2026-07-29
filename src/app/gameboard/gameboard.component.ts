@@ -4,6 +4,7 @@ import {
     AfterViewInit,
     Component,
     ElementRef, OnChanges,
+    OnDestroy,
     OnInit,
     QueryList,
     ViewChild,
@@ -13,7 +14,7 @@ import {first, flatMap, map, takeUntil} from 'rxjs/operators';
 import {Card, GameState, User} from '@app/_models';
 
 import {AccountService, AlertService, GameService} from '@app/_services';
-import {interval, Observable, Subject} from 'rxjs';
+import {Observable, Subject, timer} from 'rxjs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ReturnCoinsDialogComponent} from '@app/return-coins-dialog/return-coins-dialog.component';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -28,7 +29,7 @@ import {Animations} from '@app/animations/animations';
     styleUrls: ['./gameboard.component.less'],
     animations: Animations
 })
-export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges {
+export class GameboardComponent implements OnInit, OnDestroy {
     user: User;
     lastPlayer: string;
     gameStateLocal: GameState;
@@ -46,6 +47,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     hasCardBeenTaken: boolean[];
     hasTokenBeenTaken: Record<string, boolean>;
     hasNobleBeenTaken: boolean[];
+    private syncTimer: any;
 
 
     @ViewChildren('cardsDiv') cardsDiv: QueryList<ElementRef>;
@@ -67,7 +69,7 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     }
 
     ngOnInit(): void {
-        interval(2 * 1000)
+        timer(0, 2 * 1000)
             .pipe(
                 flatMap(() => this.gameService.getGameState()),
                 takeUntil(this.unsubscribe$)
@@ -94,10 +96,13 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                 }
                 // on endGame the block above already fetched the final state and closed the
                 // session - another fullState() here would go to a game that no longer exists
-                if (data.state !== this.lastPlayer && data.state !== 'endGame') {
+                // revision is sent by the local vs-bots backend only; without it the token is
+                // just lastPlayerId, which is what the Spring backend has always returned
+                const changed = data.state + '|' + (data.revision || '');
+                if (changed !== this.lastPlayer && data.state !== 'endGame') {
                     this.fullState();
                 }
-                this.lastPlayer = data.state;
+                this.lastPlayer = changed;
             });
     }
 
@@ -107,6 +112,15 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
         this.hasNobleBeenTaken.fill(false);
         this.gameService.getFullState()
             .subscribe(gameState => {
+                if (!gameState) {
+                    // A bookmarked/back-button /game route is valid while logged in even when
+                    // neither a local nor an online game exists. The backend represents that as
+                    // an empty response, so return to the lobby instead of rendering null.
+                    this.unsubscribe$.next();
+                    this.unsubscribe$.complete();
+                    this.router.navigate(['/']);
+                    return;
+                }
                 console.log(gameState);
 
                 if (this.gameStateLocal !== undefined) {
@@ -143,6 +157,12 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
                 if (this.gameStateLocal === undefined) {
                     this.gameStateLocal = this.gameStateTemp;
                 }
+                // The board renders gameStateLocal and animEnd() is what swaps the fresh state in.
+                // A move that lights up no flag (returning tokens, buying from hand) or that lights
+                // the same flags as the previous one produces no animation state change at all, so
+                // .done never fires and the board would freeze on a stale state for good.
+                clearTimeout(this.syncTimer);
+                this.syncTimer = setTimeout(() => this.applyFetchedState(), 700);
                 // a refresh mid "give back tokens" would otherwise leave the game stuck
                 if (gameState.isItMyTurn && !this.dialogRef && currentPlayer &&
                     Object.values(currentPlayer.tokens).reduce((s, n) => s + n, 0) > 10) {
@@ -162,7 +182,14 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
         }
         this.botTurnInFlight = true;
         this.gameService.advanceComputerTurn(gameState.revision)
-            .subscribe(() => this.botTurnInFlight = false,
+            .subscribe(data => {
+                    this.botTurnInFlight = false;
+                    // The local bot has already committed its move. Read that state now instead
+                    // of leaving the board on "Turn: Computer" until the next two-second poll.
+                    if (data.message === 'Operation Confirmed' || data.message === 'stale revision') {
+                        this.fullState();
+                    }
+                },
                 () => this.botTurnInFlight = false);
     }
 
@@ -209,6 +236,14 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
             this.sendMixed();
         }
         if (!this.gameStateLocal.isItMyTurn || !(this.gameStateLocal.tokens[token] > 0)) {
+            return;
+        }
+        // Clicking the picked colour again drops it - the only way out of a misclick, since the
+        // pick lives on the client until the whole move is submitted. A pile of 4+ keeps its
+        // "click again to take two" meaning and is handled below.
+        if (this.gameStateLocal.firstToken === token && this.gameStateLocal.secondToken === undefined &&
+            !(this.gameStateLocal.tokens[token] > 3)) {
+            this.gameStateLocal.firstToken = undefined;
             return;
         }
         if (this.gameStateLocal.firstToken === undefined) {
@@ -348,6 +383,31 @@ export class GameboardComponent implements OnInit{ // , AfterViewInit, OnChanges
     }
 
     animEnd($event: any) {
+        this.applyFetchedState();
+    }
+
+    private applyFetchedState() {
+        if (!this.gameStateTemp) {
+            return;
+        }
+        // Local polling may fetch the same revision again while the player is choosing
+        // several tokens. Replacing the object would erase firstToken/secondToken halfway
+        // through the click sequence. Online states have no revision, so they still follow
+        // the original animation-driven assignment.
+        const currentRevision = this.gameStateLocal && this.gameStateLocal.revision;
+        const fetchedRevision = this.gameStateTemp.revision;
+        if (currentRevision !== undefined && currentRevision !== null &&
+            fetchedRevision === currentRevision) {
+            return;
+        }
         this.gameStateLocal = this.gameStateTemp;
+    }
+
+    ngOnDestroy() {
+        // leaving the board mid-game must stop the poll, or it keeps running (and opening
+        // dialogs) over whatever page the user navigated to
+        clearTimeout(this.syncTimer);
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
     }
 }

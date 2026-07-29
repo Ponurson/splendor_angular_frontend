@@ -35,7 +35,12 @@ export class OfflineBackendInterceptor implements HttpInterceptor {
         const me = game.state ? game.human().playerId : null;
         switch (path) {
             case '/game/getState':   // pure read: bot turns only advance via advanceComputerTurn
-                return {state: game.state ? game.state.lastPlayerId : null};
+                // revision too: a bot answers in the same tick as the human move, so lastPlayerId
+                // reads the same before and after and the poll would see no change at all
+                return {
+                    state: game.state ? game.state.lastPlayerId : null,
+                    revision: game.state ? String(game.state.revision) : null
+                };
             case '/game/getFullState':   // pure read
                 return game.state ? game.fullState(me) : null;
             case '/game/advanceComputerTurn':

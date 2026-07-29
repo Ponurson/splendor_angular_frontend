@@ -25,7 +25,8 @@
         <div class="col-sm-4">
             <div class="row m-1">
                 <div class="col text-center font-weight-bold">
-                    {{gameStateLocal.isItMyTurn ? 'Your turn' : 'Turn: ' + gameStateLocal.currentPlayerName}}
+                    {{gameStateLocal.isItMyTurn ? 'Your turn' :
+                        (gameStateLocal.currentPlayerName ? 'Turn: ' + gameStateLocal.currentPlayerName : 'Game over')}}
                 </div>
             </div>
             <div class="row m-1 ml-1 mr-1">
